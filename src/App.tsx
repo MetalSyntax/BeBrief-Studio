@@ -106,7 +106,7 @@ function App() {
       <div className="flex-1 flex overflow-hidden w-full relative">
         {/* Left Sidebar: Sections listing (only in edit mode) */}
         {!previewMode && (
-          <div className={`shrink-0 lg:block h-full ${activeMobileTab === 'sections' ? 'block w-full' : 'hidden lg:block'}`}>
+          <div className={`shrink-0 h-full w-full lg:w-80 ${activeMobileTab === 'sections' ? 'block' : 'hidden lg:block'}`}>
             <SectionList />
           </div>
         )}
@@ -118,7 +118,7 @@ function App() {
 
         {/* Right Sidebar: Active properties panel (only in edit mode) */}
         {!previewMode && (
-          <div className={`shrink-0 lg:block h-full ${activeMobileTab === 'inspector' ? 'block w-full' : 'hidden lg:block'}`}>
+          <div className={`shrink-0 h-full w-full lg:w-80 ${activeMobileTab === 'inspector' ? 'block' : 'hidden lg:block'}`}>
             <SectionInspector />
           </div>
         )}
