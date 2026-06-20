@@ -1,73 +1,84 @@
-# React + TypeScript + Vite
+# 🎨 Behance Brief Builder
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A premium, interactive web application designed to help designers structure, prototype, and build stunning Case Study Briefs for Behance. Craft sections, customize color palettes, modify metrics, and export everything directly to standalone HTML, PDF, or high-resolution images.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## ⚡ Key Features
 
-## React Compiler
+* **Live Editor Canvas**: Edit typography, titles, copy, and visual values directly in place on the canvas.
+* **Fully Responsive & Scaled Workspace**:
+  * **Desktop & Tablet**: Fluid responsive flow layout adjusting automatically to the remaining screen space while keeping properties and sections panels visible.
+  * **Mobile View (`< 768px`)**: Locks into a fixed `498px` layout representing a mobile device, automatically scaled down to fit any smartphone viewport without clipping or horizontal overflow.
+* **High-Resolution Exports**:
+  * Standalone HTML standalone package.
+  * High-quality **PNG** and **WEBP** images generated at a standard `1600px` Behance width.
+  * Multi-format document **PDF** exports.
+* **Dynamic Property Inspector**: Modify section background colors, text colors, paddings, and alignment settings on the fly.
+* **State Management**: Built with **Zustand** for lightweight, real-time reactive state updates.
+* **Internationalization**: Fully localized interface support.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## 🛠️ Technology Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+* **Core**: React 18, TypeScript, Vite
+* **Styling**: Tailwind CSS, Lucide React (Icons)
+* **State Management**: Zustand
+* **Export Utilities**: `html-to-image`, `jspdf`
+* **i18n**: `react-i18next`
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+---
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## 🚀 Getting Started
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+### Prerequisites
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+* Node.js (v18 or higher)
+* npm or yarn
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### Installation
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+1. Clone or copy this repository to your workspace.
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Run the local development server:
+   ```bash
+   npm run dev
+   ```
+4. Build for production:
+   ```bash
+   npm run build
+   ```
+
+---
+
+## 📝 Changelog
+
+### [v1.1.0] - 2026-06-20
+
+#### 🚀 Added
+- **Mobile Locked Layout**: Locked canvas layout width to `498px` on screens below `768px` wide, scaling the canvas dynamically with `transform: scale` so it fits viewports like iPhone/Android without horizontal scrolling.
+- **Responsive Tablet/Desktop Flow**: Set default zoom auto-mode to a native `w-full` fluid flow. Canvas content wraps and centers dynamically.
+- **Image Export Resolution Locking**: Added forced `1600px` layout rendering during export compilation to ensure high-resolution PNG & WEBP output even when viewing scaled layouts.
+- **PWA & Tauri Roadmap**: Drafted detailed setup plans under the `.plans/` directory for progressive web app packaging and desktop app distribution with Tauri.
+
+#### 🔧 Fixed
+- **Canvas Scaling Cutoff**: Solved left-edge clipping by introducing a dynamic scaled-size wrapper, replacing `top center` origins with `top left` offsets.
+- **Flexbox Sidebar Push**: Added `min-w-0` to the editor's workspace center column, preventing canvas container layout expansion from pushing sidebars off-screen.
+- **Inline Text Editing**: Resolved live edit cursor bugs in text nodes on active sections.
+
+#### 🗑️ Chore
+- Initialized local Git repository setup.
+
+---
+
+### [v1.0.0] - 2026-06-15
+
+#### 🚀 Added
+- Core builder layout featuring dynamic interactive panels: Sections list (left), Editor canvas (center), Property inspector (right).
+- Initial section templates: Cover, Overview, Color Palette, Typography, Mockups, Problem, Process, Results, Footer.
+- Standalone HTML exporter.
+- Multi-language translation setup.
