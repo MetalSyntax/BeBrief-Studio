@@ -17,6 +17,16 @@ export function EditorCanvas({ previewMode }: Props) {
   const [zoomMode, setZoomMode] = useState<'auto' | 'custom'>('auto')
   const [zoomScale, setZoomScale] = useState(1)
   const [canvasHeight, setCanvasHeight] = useState<number>(0)
+  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1280)
+
+  // Track window resize to reactively switch mobile/desktop styles
+  useEffect(() => {
+    const handleWinResize = () => setWindowWidth(window.innerWidth)
+    window.addEventListener('resize', handleWinResize)
+    return () => window.removeEventListener('resize', handleWinResize)
+  }, [])
+
+  const isMobileView = windowWidth < 768
 
   // Auto-scale handler
   useEffect(() => {
@@ -24,11 +34,12 @@ export function EditorCanvas({ previewMode }: Props) {
 
     const handleResize = () => {
       if (!containerRef.current) return
-      const parentWidth = containerRef.current.clientWidth - 48
-      const targetWidth = 1600
+      const isMobile = window.innerWidth < 768
+      const parentWidth = containerRef.current.clientWidth - (isMobile ? 24 : 48)
+      const targetWidth = isMobile ? 498 : 1600
       
-      if (parentWidth < targetWidth) {
-        setZoomScale(parentWidth / targetWidth)
+      if (isMobile) {
+        setZoomScale(Math.min(1, parentWidth / targetWidth))
       } else {
         setZoomScale(1)
       }
@@ -44,7 +55,7 @@ export function EditorCanvas({ previewMode }: Props) {
     return () => {
       observer.disconnect()
     }
-  }, [zoomMode, project.sections.length, previewMode])
+  }, [zoomMode, project.sections.length, previewMode, windowWidth])
 
   // Canvas height observer
   useEffect(() => {
@@ -156,34 +167,34 @@ export function EditorCanvas({ previewMode }: Props) {
         {/* Dynamic size wrapper to preserve scaled dimensions in browser layout */}
         <div
           style={
-            zoomMode === 'auto'
+            zoomMode === 'auto' && !isMobileView
               ? { width: '100%', height: 'auto' }
               : {
-                  width: `${1600 * zoomScale}px`,
+                  width: `${(isMobileView ? 498 : 1600) * zoomScale}px`,
                   height: canvasHeight ? `${canvasHeight * zoomScale}px` : 'auto',
                   transition: 'width 150ms ease-out, height 150ms ease-out',
                 }
           }
-          className={`${zoomMode === 'auto' ? 'w-full' : 'shrink-0'} flex justify-start items-start overflow-hidden rounded-2xl mx-auto`}
+          className={`${zoomMode === 'auto' && !isMobileView ? 'w-full' : 'shrink-0'} flex justify-start items-start overflow-hidden rounded-2xl mx-auto`}
         >
           {/* Scaled Inner Canvas */}
           <div 
             ref={canvasRef}
             id="brief-canvas-export"
             style={
-              zoomMode === 'auto'
+              zoomMode === 'auto' && !isMobileView
                 ? {
                     width: '100%',
                     transform: 'none',
                   }
                 : {
-                    width: '1600px',
+                    width: `${isMobileView ? 498 : 1600}px`,
                     transform: `scale(${zoomScale})`,
                     transformOrigin: 'top left',
                     transition: 'transform 150ms ease-out',
                   }
             }
-            className="shadow-2xl border border-white/5 rounded-2xl overflow-hidden shrink-0 flex flex-col bg-[#13131a] w-full"
+            className={`shadow-2xl border border-white/5 rounded-2xl overflow-hidden shrink-0 flex flex-col bg-[#13131a] ${zoomMode === 'auto' && !isMobileView ? 'w-full' : ''}`}
           >
             {sortedSections.length === 0 ? (
               <div className="bg-[#13131a] p-24 text-center border border-white/5 rounded-2xl text-zinc-400">
