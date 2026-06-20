@@ -1,0 +1,176 @@
+{
+  "toolbar": {
+    "appName": "Behance Brief Builder",
+    "theme": "Tema",
+    "preview": "Vista Previa",
+    "edit": "Editar",
+    "printPdf": "Imprimir PDF",
+    "copyHtml": "Copiar HTML",
+    "downloadHtml": "Descargar HTML",
+    "backToDashboard": "Volver al Dashboard"
+  },
+  "sidebar": {
+    "sections": "Secciones del Brief",
+    "noSections": "No hay secciones aún. Añade una abajo.",
+    "addSection": "Añadir Sección"
+  },
+  "sections": {
+    "cover": "Portada / Cover",
+    "overview": "Resumen / Overview",
+    "problem": "El Problema",
+    "process": "Flujo del Proceso",
+    "color-palette": "Paleta de Colores",
+    "typography": "Tipografía",
+    "mockups": "Maquetas / Mockups",
+    "ux-flow": "UX Flow",
+    "results": "Resultados / KPIs",
+    "footer": "Pie de Página / Footer"
+  },
+  "inspector": {
+    "tabs": {
+      "content": "Contenido",
+      "style": "Estilo",
+      "advanced": "Avanzado"
+    },
+    "empty": "Selecciona una sección en el lienzo para inspeccionar y editar sus propiedades.",
+    "field": {
+      "eyebrow": "Eyebrow (Etiqueta)",
+      "mainTitle": "Título Principal",
+      "subtitle": "Subtítulo",
+      "titleSize": "Tamaño Título",
+      "alignment": "Alineación",
+      "alignLeft": "Izquierda",
+      "alignCenter": "Centrado",
+      "decorElements": "Elementos decorativos",
+      "pageCounter": "Contador de Página",
+      "sectionNumber": "Número",
+      "sectionTitle": "Título de Sección",
+      "contextParagraph": "Párrafo de Contexto",
+      "metricsKpis": "Métricas / KPIs",
+      "layout": "Disposición (Layout)",
+      "colors": "Colores",
+      "mockupsList": "Mockups List",
+      "description": "Descripción / Texto",
+      "imageUrl": "Imagen URL",
+      "authorName": "Autor (Nombre)",
+      "authorRole": "Rol / Cargo",
+      "year": "Año",
+      "socialLinks": "Enlaces Sociales / Redes",
+      "paddings": "Padding (Relleno Vertical)",
+      "sectionWidth": "Ancho de la Sección"
+    },
+    "style": {
+      "inheritTheme": "Heredar de Tema",
+      "inheritDesc": "Usa los colores globales del tema activo",
+      "fonts": "Tipografías (Fuentes)",
+      "displayFont": "Tipografía Display",
+      "customColors": "Personalizar Colores",
+      "gradientPresets": "Gradientes / Fondos Predeterminados",
+      "bgCssCode": "Código CSS de Fondo (o HEX)",
+      "textColor": "Color de Texto",
+      "accentColor": "Color de Acento",
+      "layoutConfig": "Configuración de Diseño (Layout)"
+    },
+    "advanced": {
+      "sectionState": "Estado de la Sección",
+      "hide": "Ocultar",
+      "show": "Mostrar",
+      "delete": "Eliminar"
+    }
+  },
+  "canvas": {
+    "emptyTitle": "Comienza tu Brief de Behance",
+    "emptyDesc": "Añade secciones desde la barra lateral izquierda.",
+    "zoomFit": "Ajustar"
+  },
+  "dashboard": {
+    "savedProjects": "Proyectos Guardados",
+    "createCatchy": "Crea Case Studies que cautiven",
+    "subtitle": "Diseña la estructura de tu caso de estudio de Behance de forma modular. Personaliza colores, fuentes y contenidos, y expórtalo a HTML o PDF standalone.",
+    "createFromTemplate": "Crear desde Plantilla",
+    "myStudies": "Mis Case Studies ({{count}})",
+    "footer": "Behance Brief Builder &copy; 2026 · Edición modular y exportación standalone.",
+    "badgeFeatured": "Destacado",
+    "badgeClean": "Limpio",
+    "badgeTech": "Tech",
+    "darkEditorial": {
+      "name": "Dark Editorial",
+      "desc": "Inspirado en App E-Commerce. Alta gama y fondo oscuro cálido."
+    },
+    "cleanLight": {
+      "name": "Clean Light",
+      "desc": "Inspirado en Business Market Finders. Fondo blanco, limpio y moderno."
+    },
+    "minimalDark": {
+      "name": "Minimal Dark",
+      "desc": "Diseño neutro oscuro, ideal para proyectos tecnológicos o de producto."
+    },
+    "projectMeta": "Tema: {{theme}} · {{count}} secciones",
+    "modified": "Modificado:",
+    "alertMinProjects": "Debes conservar al menos un proyecto en el dashboard.",
+    "duplicateStudy": "Duplicar Proyecto",
+    "deleteStudy": "Eliminar Proyecto",
+    "copySuffix": "(Copia)",
+    "newCaseStudyDefaultTitle": "Nuevo Case Study"
+  },
+  "defaults": {
+    "cover": {
+      "eyebrow": "UI/UX CASE STUDY",
+      "title": "Nuevo Case Study",
+      "subtitle": "Descripción breve de este increíble proyecto."
+    },
+    "overview": {
+      "title": "Overview",
+      "contextText": "Escribe aquí un resumen del proyecto, objetivos y contexto general.",
+      "roleLabel": "Rol",
+      "roleValue": "Diseñador",
+      "durationLabel": "Duración",
+      "durationValue": "1 Mes"
+    },
+    "problem": {
+      "title": "El Problema",
+      "description": "Explica los puntos de dolor detectados y qué intentas resolver."
+    },
+    "process": {
+      "title": "El Proceso",
+      "step1Title": "Investigación",
+      "step1Desc": "User interviews y benchmarking",
+      "step2Title": "Definición",
+      "step2Desc": "User personas e insights",
+      "step3Title": "Wireframes",
+      "step3Desc": "Estructuración y flujos"
+    },
+    "colorPalette": {
+      "title": "Paleta de Colores",
+      "color1Name": "Negro",
+      "color1Role": "Fondos y texto",
+      "color2Name": "Acento",
+      "color2Role": "CTAs y foco"
+    },
+    "typography": {
+      "title": "Tipografías",
+      "fontRole": "Display y Cuerpo"
+    },
+    "mockups": {
+      "title": "Visual Mockups",
+      "description": "Pantallas y componentes en alta definición."
+    },
+    "uxFlow": {
+      "title": "Flujo del Usuario",
+      "description": "Diagrama de interacciones principales."
+    },
+    "results": {
+      "title": "Resultados y Métricas",
+      "description": "Cómo mejoró el producto tras la implementación.",
+      "metricLabel": "Conversión"
+    },
+    "footer": {
+      "authorName": "Tu Nombre",
+      "authorRole": "Diseñador UI/UX"
+    }
+  },
+  "themes": {
+    "groupDark": "Temas Oscuros",
+    "groupLight": "Temas Claros"
+  }
+}

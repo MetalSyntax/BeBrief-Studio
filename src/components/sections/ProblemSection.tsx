@@ -1,0 +1,111 @@
+import type { Section, ProblemData } from '../../lib/types/project.types'
+import { useProjectStore } from '../../lib/store/projectStore'
+import { EditableText } from '../ui/EditableText'
+import { Upload, X } from 'lucide-react'
+
+interface Props {
+  section: Section & { data: ProblemData }
+  isEditing: boolean
+  onClick?: () => void
+}
+
+export function ProblemSection({ section, isEditing, onClick }: Props) {
+  const { data, style } = section
+  const updateSection = useProjectStore((state) => state.updateSection)
+
+  const handleUpdate = (key: keyof ProblemData, val: any) => {
+    updateSection(section.id, { [key]: val })
+  }
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        handleUpdate('image', reader.result as string)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  return (
+    <div
+      onClick={onClick}
+      style={{
+        background: style.background,
+        color: style.textColor,
+        padding: style.padding || '100px 80px',
+      }}
+      className={`w-full overflow-hidden transition-all duration-300 ${
+        isEditing ? 'ring-2 ring-violet-500 ring-offset-2' : ''
+      } cursor-pointer`}
+    >
+      <div className="max-w-[1120px] mx-auto w-full px-6 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+        <div className={data.layout === 'left-image' ? 'md:order-2' : ''}>
+          <div className="flex items-center gap-3 mb-6">
+            {data.sectionNumber && (
+              <EditableText
+                value={data.sectionNumber}
+                onChange={(val) => handleUpdate('sectionNumber', val)}
+                isEditing={isEditing}
+                tagName="span"
+                className="font-mono text-sm opacity-60 bg-white/5 border border-white/10 px-2 py-0.5 rounded"
+              />
+            )}
+            
+            <EditableText
+              value={data.title}
+              onChange={(val) => handleUpdate('title', val)}
+              isEditing={isEditing}
+              tagName="h2"
+              className="text-2xl font-bold tracking-tight uppercase"
+              style={{ fontFamily: 'var(--font-display)' }}
+            />
+          </div>
+          
+          <EditableText
+            value={data.description}
+            onChange={(val) => handleUpdate('description', val)}
+            isEditing={isEditing}
+            tagName="p"
+            className="text-lg leading-relaxed font-light opacity-90 whitespace-pre-line"
+            style={{ fontFamily: 'var(--font-body)' }}
+          />
+        </div>
+        
+        <div className={`${data.layout === 'left-image' ? 'md:order-1' : ''} bg-white/[0.02] border border-white/5 rounded-2xl aspect-[4/3] flex items-center justify-center p-8 relative overflow-hidden group`}>
+          {data.image ? (
+            <div className="relative w-full h-full flex items-center justify-center">
+              <img src={data.image} alt={data.title} className="max-h-full max-w-full object-contain rounded-lg" />
+              {isEditing && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleUpdate('image', '')
+                  }}
+                  className="absolute top-2 right-2 bg-red-600 hover:bg-red-500 text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
+                  title="Quitar Imagen"
+                >
+                  <X size={14} />
+                </button>
+              )}
+            </div>
+          ) : (
+            <label className="flex flex-col items-center opacity-60 cursor-pointer hover:opacity-100 transition-opacity">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="hidden"
+                disabled={!isEditing}
+              />
+              <Upload size={24} className="text-zinc-500 mb-2" />
+              <span className="font-mono text-xs uppercase tracking-wider mb-1">Imagen del Problema</span>
+              <span className="text-[10px] opacity-60">Haz clic para subir (1024x768 recomendado)</span>
+            </label>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}

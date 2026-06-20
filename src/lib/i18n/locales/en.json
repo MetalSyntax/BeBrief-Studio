@@ -1,0 +1,176 @@
+{
+  "toolbar": {
+    "appName": "Behance Brief Builder",
+    "theme": "Theme",
+    "preview": "Preview",
+    "edit": "Edit",
+    "printPdf": "Print PDF",
+    "copyHtml": "Copy HTML",
+    "downloadHtml": "Download HTML",
+    "backToDashboard": "Back to Dashboard"
+  },
+  "sidebar": {
+    "sections": "Brief Sections",
+    "noSections": "No sections yet. Add one below.",
+    "addSection": "Add Section"
+  },
+  "sections": {
+    "cover": "Cover",
+    "overview": "Overview",
+    "problem": "The Problem",
+    "process": "Process Flow",
+    "color-palette": "Color Palette",
+    "typography": "Typography",
+    "mockups": "Mockups",
+    "ux-flow": "UX Flow",
+    "results": "Results / KPIs",
+    "footer": "Footer"
+  },
+  "inspector": {
+    "tabs": {
+      "content": "Content",
+      "style": "Style",
+      "advanced": "Advanced"
+    },
+    "empty": "Select a section on the canvas to inspect and edit its properties.",
+    "field": {
+      "eyebrow": "Eyebrow (Label)",
+      "mainTitle": "Main Title",
+      "subtitle": "Subtitle",
+      "titleSize": "Title Size",
+      "alignment": "Alignment",
+      "alignLeft": "Left",
+      "alignCenter": "Centered",
+      "decorElements": "Decorative elements",
+      "pageCounter": "Page Counter",
+      "sectionNumber": "Number",
+      "sectionTitle": "Section Title",
+      "contextParagraph": "Context Paragraph",
+      "metricsKpis": "Metrics / KPIs",
+      "layout": "Layout",
+      "colors": "Colors",
+      "mockupsList": "Mockups List",
+      "description": "Description / Text",
+      "imageUrl": "Image URL",
+      "authorName": "Author (Name)",
+      "authorRole": "Role / Position",
+      "year": "Year",
+      "socialLinks": "Social Links",
+      "paddings": "Padding (Vertical Fill)",
+      "sectionWidth": "Section Width"
+    },
+    "style": {
+      "inheritTheme": "Inherit from Theme",
+      "inheritDesc": "Uses global colors of the active theme",
+      "fonts": "Fonts",
+      "displayFont": "Display Font",
+      "customColors": "Customize Colors",
+      "gradientPresets": "Gradient / Background Presets",
+      "bgCssCode": "Background CSS Code (or HEX)",
+      "textColor": "Text Color",
+      "accentColor": "Accent Color",
+      "layoutConfig": "Layout Configuration"
+    },
+    "advanced": {
+      "sectionState": "Section State",
+      "hide": "Hide",
+      "show": "Show",
+      "delete": "Delete"
+    }
+  },
+  "canvas": {
+    "emptyTitle": "Start your Behance Brief",
+    "emptyDesc": "Add sections from the left sidebar.",
+    "zoomFit": "Fit"
+  },
+  "dashboard": {
+    "savedProjects": "Saved Projects",
+    "createCatchy": "Create case studies that captivate",
+    "subtitle": "Design the structure of your Behance case study modularly. Customize colors, fonts, and content, and export to standalone HTML or PDF.",
+    "createFromTemplate": "Create from Template",
+    "myStudies": "My Case Studies ({{count}})",
+    "footer": "Behance Brief Builder &copy; 2026 · Modular editing and standalone export.",
+    "badgeFeatured": "Featured",
+    "badgeClean": "Clean",
+    "badgeTech": "Tech",
+    "darkEditorial": {
+      "name": "Dark Editorial",
+      "desc": "Inspired by E-Commerce App. Premium design and warm dark background."
+    },
+    "cleanLight": {
+      "name": "Clean Light",
+      "desc": "Inspired by Business Market Finders. White background, clean and modern."
+    },
+    "minimalDark": {
+      "name": "Minimal Dark",
+      "desc": "Dark neutral layout, ideal for tech or product projects."
+    },
+    "projectMeta": "Theme: {{theme}} · {{count}} sections",
+    "modified": "Modified:",
+    "alertMinProjects": "You must keep at least one project in the dashboard.",
+    "duplicateStudy": "Duplicate Project",
+    "deleteStudy": "Delete Project",
+    "copySuffix": "(Copy)",
+    "newCaseStudyDefaultTitle": "New Case Study"
+  },
+  "defaults": {
+    "cover": {
+      "eyebrow": "UI/UX CASE STUDY",
+      "title": "New Case Study",
+      "subtitle": "Brief description of this amazing project."
+    },
+    "overview": {
+      "title": "Overview",
+      "contextText": "Write a summary of the project, goals, and general context here.",
+      "roleLabel": "Role",
+      "roleValue": "Designer",
+      "durationLabel": "Duration",
+      "durationValue": "1 Month"
+    },
+    "problem": {
+      "title": "The Problem",
+      "description": "Explain the pain points detected and what you are trying to solve."
+    },
+    "process": {
+      "title": "The Process",
+      "step1Title": "Research",
+      "step1Desc": "User interviews and benchmarking",
+      "step2Title": "Definition",
+      "step2Desc": "User personas and insights",
+      "step3Title": "Wireframes",
+      "step3Desc": "Structuring and flows"
+    },
+    "colorPalette": {
+      "title": "Color Palette",
+      "color1Name": "Black",
+      "color1Role": "Backgrounds and text",
+      "color2Name": "Accent",
+      "color2Role": "CTAs and focus"
+    },
+    "typography": {
+      "title": "Typography",
+      "fontRole": "Display and Body"
+    },
+    "mockups": {
+      "title": "Visual Mockups",
+      "description": "Screens and components in high definition."
+    },
+    "uxFlow": {
+      "title": "User Flow",
+      "description": "Diagram of main interactions."
+    },
+    "results": {
+      "title": "Results and Metrics",
+      "description": "How the product improved after implementation.",
+      "metricLabel": "Conversion"
+    },
+    "footer": {
+      "authorName": "Your Name",
+      "authorRole": "UI/UX Designer"
+    }
+  },
+  "themes": {
+    "groupDark": "Dark Themes",
+    "groupLight": "Light Themes"
+  }
+}
