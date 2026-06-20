@@ -155,24 +155,35 @@ export function EditorCanvas({ previewMode }: Props) {
       >
         {/* Dynamic size wrapper to preserve scaled dimensions in browser layout */}
         <div
-          style={{
-            width: `${1600 * zoomScale}px`,
-            height: canvasHeight ? `${canvasHeight * zoomScale}px` : 'auto',
-            transition: 'width 150ms ease-out, height 150ms ease-out',
-          }}
-          className="shrink-0 flex justify-start items-start overflow-hidden rounded-2xl mx-auto"
+          style={
+            zoomMode === 'auto'
+              ? { width: '100%', height: 'auto' }
+              : {
+                  width: `${1600 * zoomScale}px`,
+                  height: canvasHeight ? `${canvasHeight * zoomScale}px` : 'auto',
+                  transition: 'width 150ms ease-out, height 150ms ease-out',
+                }
+          }
+          className={`${zoomMode === 'auto' ? 'w-full' : 'shrink-0'} flex justify-start items-start overflow-hidden rounded-2xl mx-auto`}
         >
           {/* Scaled Inner Canvas */}
           <div 
             ref={canvasRef}
             id="brief-canvas-export"
-            style={{
-              width: '1600px',
-              transform: `scale(${zoomScale})`,
-              transformOrigin: 'top left',
-              transition: 'transform 150ms ease-out',
-            }}
-            className="shadow-2xl border border-white/5 rounded-2xl overflow-hidden shrink-0 flex flex-col bg-[#13131a]"
+            style={
+              zoomMode === 'auto'
+                ? {
+                    width: '100%',
+                    transform: 'none',
+                  }
+                : {
+                    width: '1600px',
+                    transform: `scale(${zoomScale})`,
+                    transformOrigin: 'top left',
+                    transition: 'transform 150ms ease-out',
+                  }
+            }
+            className="shadow-2xl border border-white/5 rounded-2xl overflow-hidden shrink-0 flex flex-col bg-[#13131a] w-full"
           >
             {sortedSections.length === 0 ? (
               <div className="bg-[#13131a] p-24 text-center border border-white/5 rounded-2xl text-zinc-400">

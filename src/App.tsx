@@ -57,6 +57,7 @@ function App() {
     try {
       const options = {
         style: {
+          width: '1600px',
           transform: 'none',
           transformOrigin: 'top center',
           margin: '0',
