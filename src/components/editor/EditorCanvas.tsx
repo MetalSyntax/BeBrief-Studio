@@ -147,7 +147,7 @@ export function EditorCanvas({ previewMode }: Props) {
       {/* Outer Scroll Container */}
       <div 
         ref={containerRef}
-        className="flex-1 overflow-y-auto overflow-x-hidden p-3 lg:p-6 flex justify-center items-start custom-scrollbar"
+        className="flex-1 overflow-y-auto overflow-x-auto p-3 lg:p-6 flex items-start custom-scrollbar"
         onClick={() => !previewMode && setActiveSectionId(null)}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
@@ -160,7 +160,7 @@ export function EditorCanvas({ previewMode }: Props) {
             height: canvasHeight ? `${canvasHeight * zoomScale}px` : 'auto',
             transition: 'width 150ms ease-out, height 150ms ease-out',
           }}
-          className="shrink-0 flex justify-center items-start overflow-hidden rounded-2xl"
+          className="shrink-0 flex justify-center items-start overflow-hidden rounded-2xl mx-auto"
         >
           {/* Scaled Inner Canvas */}
           <div 

@@ -112,7 +112,7 @@ function App() {
         )}
 
         {/* Center: Interactive editor canvas */}
-        <div className={`flex-1 h-full ${previewMode || activeMobileTab === 'canvas' ? 'block' : 'hidden lg:block'}`}>
+        <div className={`flex-1 min-w-0 h-full ${previewMode || activeMobileTab === 'canvas' ? 'block' : 'hidden lg:block'}`}>
           <EditorCanvas previewMode={previewMode} />
         </div>
 
