@@ -125,7 +125,7 @@ export function EditorCanvas({ previewMode }: Props) {
       {/* Outer Scroll Container */}
       <div 
         ref={containerRef}
-        className="flex-1 overflow-auto p-6 flex justify-center items-start custom-scrollbar"
+        className="flex-1 overflow-y-auto overflow-x-hidden p-3 lg:p-6 flex justify-center items-start custom-scrollbar"
         onClick={() => !previewMode && setActiveSectionId(null)}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
@@ -133,6 +133,7 @@ export function EditorCanvas({ previewMode }: Props) {
       >
         {/* Scaled Inner Wrapper */}
         <div 
+          id="brief-canvas-export"
           style={{
             width: '1600px',
             transform: `scale(${zoomScale})`,

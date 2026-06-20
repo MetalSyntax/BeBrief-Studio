@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useProjectStore } from '../../lib/store/projectStore'
 import type { ThemeId } from '../../lib/types/project.types'
 import { Undo2, Redo2, Eye, Download, Sparkles, Copy, Printer, Home } from 'lucide-react'
@@ -9,11 +9,13 @@ interface Props {
   setPreviewMode: (mode: boolean) => void
   onExportHTML: () => void
   onCopyHTML: () => void
+  onExportImage: (format: 'png' | 'webp') => void
 }
 
-export function Toolbar({ previewMode, setPreviewMode, onExportHTML, onCopyHTML }: Props) {
+export function Toolbar({ previewMode, setPreviewMode, onExportHTML, onCopyHTML, onExportImage }: Props) {
   const { project, past, future, setTheme, undo, redo, setView, updateProjectTitle } = useProjectStore()
   const { t, i18n } = useTranslation()
+  const [showExportMenu, setShowExportMenu] = useState(false)
 
   const handleThemeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setTheme(e.target.value as ThemeId)
@@ -142,19 +144,59 @@ export function Toolbar({ previewMode, setPreviewMode, onExportHTML, onCopyHTML 
 
           <button
             onClick={onCopyHTML}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-zinc-800 text-zinc-200 border border-white/10 hover:text-white transition-all"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-zinc-800 text-zinc-200 border border-white/10 hover:text-white transition-all shrink-0"
           >
             <Copy size={14} />
             <span className="hidden sm:inline">{t('toolbar.copyHtml')}</span>
           </button>
 
-          <button
-            onClick={onExportHTML}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-600 text-white shadow-lg shadow-emerald-500/20 hover:bg-emerald-500 transition-all"
-          >
-            <Download size={14} />
-            <span>{t('toolbar.downloadHtml')}</span>
-          </button>
+          <div className="relative">
+            <button
+              onClick={() => setShowExportMenu(!showExportMenu)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-600 text-white shadow-lg shadow-emerald-500/20 hover:bg-emerald-500 transition-all shrink-0"
+            >
+              <Download size={14} />
+              <span>Exportar...</span>
+            </button>
+
+            {showExportMenu && (
+              <>
+                <div 
+                  className="fixed inset-0 z-40" 
+                  onClick={() => setShowExportMenu(false)}
+                />
+                <div className="absolute right-0 mt-2 w-48 bg-[#13131a] border border-white/10 rounded-xl shadow-2xl z-50 p-1.5 flex flex-col gap-1">
+                  <button
+                    onClick={() => {
+                      onExportHTML()
+                      setShowExportMenu(false)
+                    }}
+                    className="w-full text-left px-3 py-2 rounded-lg text-xs hover:bg-white/5 text-zinc-200 hover:text-white transition-colors"
+                  >
+                    📥 Descargar HTML
+                  </button>
+                  <button
+                    onClick={() => {
+                      onExportImage('png')
+                      setShowExportMenu(false)
+                    }}
+                    className="w-full text-left px-3 py-2 rounded-lg text-xs hover:bg-white/5 text-zinc-200 hover:text-white transition-colors"
+                  >
+                    🖼️ Exportar PNG (Imagen)
+                  </button>
+                  <button
+                    onClick={() => {
+                      onExportImage('webp')
+                      setShowExportMenu(false)
+                    }}
+                    className="w-full text-left px-3 py-2 rounded-lg text-xs hover:bg-white/5 text-zinc-200 hover:text-white transition-colors"
+                  >
+                    ⚡ Exportar WEBP (Imagen)
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </header>

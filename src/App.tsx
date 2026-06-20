@@ -50,7 +50,46 @@ function App() {
       alert('Hubo un error al copiar el HTML.')
     }
   }
+  const handleExportImage = async (format: 'png' | 'webp') => {
+    const el = document.getElementById('brief-canvas-export')
+    if (!el) return
 
+    try {
+      const options = {
+        style: {
+          transform: 'none',
+          transformOrigin: 'top center',
+          margin: '0',
+          padding: '0'
+        },
+        width: 1600,
+      }
+
+      let dataUrl = ''
+      const htmlToImage = await import('html-to-image') as any
+
+      if (format === 'webp') {
+        dataUrl = await htmlToImage.toWebp(el, options)
+      } else {
+        dataUrl = await htmlToImage.toPng(el, options)
+      }
+
+      const link = document.createElement('a')
+      link.href = dataUrl
+      const safeTitle = project.title
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/(^-|-$)+/g, '') || 'case-study'
+      
+      link.setAttribute('download', `${safeTitle}-brief.${format}`)
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+    } catch (error) {
+      console.error('Error exporting image:', error)
+      alert('Hubo un error al exportar la imagen. Verifica que todas las imágenes del lienzo se hayan cargado correctamente.')
+    }
+  }
 
   return (
     <div className="h-screen w-screen flex flex-col bg-[#0e0e11] text-zinc-100 overflow-hidden font-sans select-none">
@@ -60,6 +99,7 @@ function App() {
         setPreviewMode={setPreviewMode} 
         onExportHTML={handleExportHTML} 
         onCopyHTML={handleCopyHTML}
+        onExportImage={handleExportImage}
       />
 
       {/* Main Workspace Layout */}
