@@ -12,9 +12,11 @@ export function EditorCanvas({ previewMode }: Props) {
   const { project, activeSectionId, setActiveSectionId } = useProjectStore()
   const { t } = useTranslation()
   const containerRef = useRef<HTMLDivElement>(null)
+  const canvasRef = useRef<HTMLDivElement>(null)
   
   const [zoomMode, setZoomMode] = useState<'auto' | 'custom'>('auto')
   const [zoomScale, setZoomScale] = useState(1)
+  const [canvasHeight, setCanvasHeight] = useState<number>(0)
 
   // Auto-scale handler
   useEffect(() => {
@@ -43,6 +45,26 @@ export function EditorCanvas({ previewMode }: Props) {
       observer.disconnect()
     }
   }, [zoomMode, project.sections.length, previewMode])
+
+  // Canvas height observer
+  useEffect(() => {
+    if (!canvasRef.current) return
+
+    const handleCanvasResize = () => {
+      if (canvasRef.current) {
+        setCanvasHeight(canvasRef.current.offsetHeight)
+      }
+    }
+
+    handleCanvasResize()
+
+    const observer = new ResizeObserver(handleCanvasResize)
+    observer.observe(canvasRef.current)
+
+    return () => {
+      observer.disconnect()
+    }
+  }, [project.sections])
 
   const [touchStartDist, setTouchStartDist] = useState<number | null>(null)
   const [initialScale, setInitialScale] = useState<number>(1)
@@ -131,33 +153,43 @@ export function EditorCanvas({ previewMode }: Props) {
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        {/* Scaled Inner Wrapper */}
-        <div 
-          id="brief-canvas-export"
+        {/* Dynamic size wrapper to preserve scaled dimensions in browser layout */}
+        <div
           style={{
-            width: '1600px',
-            transform: `scale(${zoomScale})`,
-            transformOrigin: 'top center',
-            transition: 'transform 150ms ease-out',
-            marginBottom: `${(1600 * (1 - zoomScale)) * -1}px`
+            width: `${1600 * zoomScale}px`,
+            height: canvasHeight ? `${canvasHeight * zoomScale}px` : 'auto',
+            transition: 'width 150ms ease-out, height 150ms ease-out',
           }}
-          className="shadow-2xl border border-white/5 rounded-2xl overflow-hidden shrink-0 flex flex-col"
+          className="shrink-0 flex justify-center items-start overflow-hidden rounded-2xl"
         >
-          {sortedSections.length === 0 ? (
-            <div className="bg-[#13131a] p-24 text-center border border-white/5 rounded-2xl text-zinc-400">
-              <p className="text-lg font-semibold mb-2">{t('canvas.emptyTitle')}</p>
-              <p className="text-sm opacity-60">{t('canvas.emptyDesc')}</p>
-            </div>
-          ) : (
-            sortedSections.map((sec) => (
-              <SectionRenderer
-                key={sec.id}
-                section={sec}
-                isEditing={!previewMode && activeSectionId === sec.id}
-                onClick={() => !previewMode && setActiveSectionId(sec.id)}
-              />
-            ))
-          )}
+          {/* Scaled Inner Canvas */}
+          <div 
+            ref={canvasRef}
+            id="brief-canvas-export"
+            style={{
+              width: '1600px',
+              transform: `scale(${zoomScale})`,
+              transformOrigin: 'top left',
+              transition: 'transform 150ms ease-out',
+            }}
+            className="shadow-2xl border border-white/5 rounded-2xl overflow-hidden shrink-0 flex flex-col bg-[#13131a]"
+          >
+            {sortedSections.length === 0 ? (
+              <div className="bg-[#13131a] p-24 text-center border border-white/5 rounded-2xl text-zinc-400">
+                <p className="text-lg font-semibold mb-2">{t('canvas.emptyTitle')}</p>
+                <p className="text-sm opacity-60">{t('canvas.emptyDesc')}</p>
+              </div>
+            ) : (
+              sortedSections.map((sec) => (
+                <SectionRenderer
+                  key={sec.id}
+                  section={sec}
+                  isEditing={!previewMode && activeSectionId === sec.id}
+                  onClick={() => !previewMode && setActiveSectionId(sec.id)}
+                />
+              ))
+            )}
+          </div>
         </div>
       </div>
     </div>
