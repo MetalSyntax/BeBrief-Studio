@@ -6,11 +6,17 @@ import { SectionInspector } from './components/editor/SectionInspector'
 import { useProjectStore } from './lib/store/projectStore'
 import { exportProjectToHTML } from './lib/export/htmlExporter'
 import { Dashboard } from './components/dashboard/Dashboard'
+import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts'
+import { useToast } from './components/shared/ToastProvider'
+import { useTranslation } from 'react-i18next'
 import { save } from '@tauri-apps/plugin-dialog'
-import { writeTextFile } from '@tauri-apps/plugin-fs'
+import { writeTextFile, writeFile } from '@tauri-apps/plugin-fs'
 
 function App() {
   const { project, view, previewMode } = useProjectStore()
+  const toast = useToast()
+  const { t, i18n } = useTranslation()
+  useKeyboardShortcuts()
 
   const [activeMobileTab, setActiveMobileTab] = useState<'canvas' | 'sections' | 'inspector'>('canvas')
 
@@ -20,7 +26,8 @@ function App() {
 
   const handleExportHTML = async () => {
     try {
-      const htmlContent = exportProjectToHTML(project)
+      const lang = (i18n as any).language?.split('-')[0] || 'es'
+      const htmlContent = exportProjectToHTML(project, lang)
       const isTauri = typeof window !== 'undefined' && (window as any).__TAURI_INTERNALS__ !== undefined
 
       if (isTauri) {
@@ -39,7 +46,7 @@ function App() {
 
         if (filePath) {
           await writeTextFile(filePath, htmlContent)
-          alert('¡Archivo guardado con éxito!')
+          toast.success('¡Archivo HTML guardado con éxito!')
         }
       } else {
         const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8;' })
@@ -61,29 +68,29 @@ function App() {
       }
     } catch (error) {
       console.error('Error saving file:', error)
-      alert('Error al guardar el archivo de exportación')
+      toast.error('Error al guardar el archivo de exportación.')
     }
   }
 
   const handleCopyHTML = () => {
     try {
-      const htmlContent = exportProjectToHTML(project)
+      const lang = (i18n as any).language?.split('-')[0] || 'es'
+      const htmlContent = exportProjectToHTML(project, lang)
       navigator.clipboard.writeText(htmlContent)
-      alert('¡Código HTML copiado al portapapeles!')
+      toast.success('¡Código HTML copiado al portapapeles!')
     } catch (e) {
       console.error('Copy to clipboard failed', e)
-      alert('No se pudo copiar el HTML. Intenta exportar el archivo.')
+      toast.error('No se pudo copiar el HTML. Intenta exportar el archivo.')
     }
   }
 
   const handleExportImage = async (format: 'png' | 'webp') => {
     try {
-      const canvasEl = document.getElementById('brief-render-canvas')
+      const canvasEl = document.getElementById('brief-canvas-export')
       if (!canvasEl) return
 
-      // Dynamic import of html-to-image
       const htmlToImage = await import('html-to-image') as any
-      
+
       const filter = (node: HTMLElement) => {
         const exclusionClasses = ['action-btn', 'add-section-btn']
         return !exclusionClasses.some(cls => node.classList?.contains(cls))
@@ -104,7 +111,6 @@ function App() {
       const isTauri = typeof window !== 'undefined' && (window as any).__TAURI_INTERNALS__ !== undefined
 
       if (isTauri) {
-        // Tauri file save
         const filePath = await save({
           filters: [{
             name: `${format.toUpperCase()} Image`,
@@ -114,17 +120,14 @@ function App() {
         })
 
         if (filePath) {
-          // dataUrl is: data:image/png;base64,...
           const base64Data = dataUrl.split(',')[1]
-          // Convert base64 to Uint8Array
           const binaryString = atob(base64Data)
-          const len = binaryString.length
-          const bytes = new Uint8Array(len)
-          for (let i = 0; i < len; i++) {
+          const bytes = new Uint8Array(binaryString.length)
+          for (let i = 0; i < binaryString.length; i++) {
             bytes[i] = binaryString.charCodeAt(i)
           }
-          await writeTextFile(filePath, new TextDecoder().decode(bytes))
-          alert('¡Imagen guardada con éxito!')
+          await writeFile(filePath, bytes)
+          toast.success('¡Imagen guardada con éxito!')
         }
       } else {
         const link = document.createElement('a')
@@ -136,7 +139,7 @@ function App() {
       }
     } catch (error) {
       console.error('Error exporting image:', error)
-      alert('Hubo un error al exportar la imagen. Verifica que todas las imágenes del lienzo se hayan cargado correctamente.')
+      toast.error('Error al exportar la imagen. Verifica que todas las imágenes del lienzo estén cargadas.')
     }
   }
 
@@ -182,7 +185,7 @@ function App() {
             }`}
           >
             <span className="text-base mb-0.5">🗂️</span>
-            <span>Secciones</span>
+            <span>{t('mobile.tabs.sections')}</span>
           </button>
           <button
             type="button"
@@ -192,7 +195,7 @@ function App() {
             }`}
           >
             <span className="text-base mb-0.5">🎨</span>
-            <span>Lienzo</span>
+            <span>{t('mobile.tabs.canvas')}</span>
           </button>
           <button
             type="button"
@@ -202,7 +205,7 @@ function App() {
             }`}
           >
             <span className="text-base mb-0.5">⚙️</span>
-            <span>Propiedades</span>
+            <span>{t('mobile.tabs.inspector')}</span>
           </button>
         </div>
       )}

@@ -13,9 +13,8 @@ describe('BeBrief Studio E2E Tests', () => {
     // Create new project from Dark Editorial template
     cy.contains('Dark Editorial').click()
 
-    // Editor should load
-    cy.url().should('include', '/editor')
-    cy.get('header').should('contain', 'Mi Case Study de Behance')
+    // Editor should load (SPA — URL stays at /, check canvas is present)
+    cy.get('#brief-canvas-export').should('exist')
 
     // Click on Vista Previa to toggle fullscreen
     cy.contains('Vista Previa').click()

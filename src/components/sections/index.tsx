@@ -1,3 +1,4 @@
+import React from 'react'
 import type { Section } from '../../lib/types/project.types'
 import { CoverSection } from './CoverSection'
 import { OverviewSection } from './OverviewSection'
@@ -19,32 +20,52 @@ interface SectionRendererProps {
 export function SectionRenderer({ section, isEditing, onClick }: SectionRendererProps) {
   if (!section.visible) return null
 
+  const fontStyle: React.CSSProperties = section.style.displayFont && section.style.displayFont !== 'default'
+    ? { '--font-display': `'${section.style.displayFont}', sans-serif` } as React.CSSProperties
+    : {}
+
+  let inner: React.ReactNode
+
   switch (section.type) {
     case 'cover':
-      return <CoverSection section={section} isEditing={isEditing} onClick={onClick} />
+      inner = <CoverSection section={section} isEditing={isEditing} onClick={onClick} />
+      break
     case 'overview':
-      return <OverviewSection section={section} isEditing={isEditing} onClick={onClick} />
+      inner = <OverviewSection section={section} isEditing={isEditing} onClick={onClick} />
+      break
     case 'color-palette':
-      return <ColorPaletteSection section={section} isEditing={isEditing} onClick={onClick} />
+      inner = <ColorPaletteSection section={section} isEditing={isEditing} onClick={onClick} />
+      break
     case 'mockups':
-      return <MockupsSection section={section} isEditing={isEditing} onClick={onClick} />
+      inner = <MockupsSection section={section} isEditing={isEditing} onClick={onClick} />
+      break
     case 'footer':
-      return <FooterSection section={section} isEditing={isEditing} onClick={onClick} />
+      inner = <FooterSection section={section} isEditing={isEditing} onClick={onClick} />
+      break
     case 'problem':
-      return <ProblemSection section={section} isEditing={isEditing} onClick={onClick} />
+      inner = <ProblemSection section={section} isEditing={isEditing} onClick={onClick} />
+      break
     case 'process':
-      return <ProcessSection section={section} isEditing={isEditing} onClick={onClick} />
+      inner = <ProcessSection section={section} isEditing={isEditing} onClick={onClick} />
+      break
     case 'typography':
-      return <TypographySection section={section} isEditing={isEditing} onClick={onClick} />
+      inner = <TypographySection section={section} isEditing={isEditing} onClick={onClick} />
+      break
     case 'ux-flow':
-      return <UXFlowSection section={section} isEditing={isEditing} onClick={onClick} />
+      inner = <UXFlowSection section={section} isEditing={isEditing} onClick={onClick} />
+      break
     case 'results':
-      return <ResultsSection section={section} isEditing={isEditing} onClick={onClick} />
+      inner = <ResultsSection section={section} isEditing={isEditing} onClick={onClick} />
+      break
     default:
-      return (
+      inner = (
         <div className="p-8 bg-zinc-900 border border-zinc-800 text-zinc-400 rounded-lg text-center">
           Componente de sección desconocido: {section.type}
         </div>
       )
   }
+
+  if (Object.keys(fontStyle).length === 0) return <>{inner}</>
+
+  return <div style={fontStyle}>{inner}</div>
 }

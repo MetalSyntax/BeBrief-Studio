@@ -1,7 +1,7 @@
 import type { Project } from '../types/project.types'
 import { themes } from '../themes'
 
-export function exportProjectToHTML(project: Project): string {
+export function exportProjectToHTML(project: Project, lang = 'en'): string {
   const activeTheme = project.theme === 'custom' 
     ? (project.customTheme || {
         '--bg': '#0f0f12',
@@ -33,7 +33,10 @@ export function exportProjectToHTML(project: Project): string {
 
   const renderedSections = sortedSections.map((section) => {
     const { type, data, style } = section
-    const secStyleAttr = `style="background: ${style.background}; color: ${style.textColor}; padding: ${style.padding || '100px 80px'}; width: ${style.width || '1600px'};"`
+    const fontOverride = style.displayFont && style.displayFont !== 'default'
+      ? ` --font-display: '${style.displayFont}', sans-serif;`
+      : ''
+    const secStyleAttr = `style="background: ${style.background}; color: ${style.textColor}; padding: ${style.padding || '100px 80px'}; width: ${style.width || '1600px'};${fontOverride}"`
 
     switch (type) {
       case 'cover':
@@ -238,7 +241,7 @@ export function exportProjectToHTML(project: Project): string {
   }).join('\n')
 
   return `<!DOCTYPE html>
-<html lang="es">
+<html lang="${lang}">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -455,7 +458,7 @@ ${cssVariables}
     .metric-value {
       font-size: 20px;
       font-weight: 700;
-      color: #fff;
+      color: var(--text);
     }
 
     /* Color Palette */
@@ -494,7 +497,7 @@ ${cssVariables}
     .color-name {
       font-size: 14px;
       font-weight: 600;
-      color: #fff;
+      color: var(--text);
       margin-bottom: 2px;
     }
 
@@ -522,6 +525,10 @@ ${cssVariables}
     .mockups-container.scattered {
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 48px;
+      align-items: start;
+    }
+    .mockups-container.scattered .mockup-item:nth-child(3n+2) {
+      transform: translateY(48px);
     }
     .mockups-container.centered-large {
       display: flex;
@@ -546,7 +553,7 @@ ${cssVariables}
     .mockup-item img {
       max-width: 100%;
       max-height: 100%;
-      object-contain: contain;
+      object-fit: contain;
       border-radius: 8px;
     }
 
@@ -620,7 +627,7 @@ ${cssVariables}
 
     .step-title {
       font-size: 18px;
-      color: #fff;
+      color: var(--text);
       margin-bottom: 8px;
     }
 
@@ -664,7 +671,7 @@ ${cssVariables}
     .font-name {
       font-size: 28px;
       font-weight: 800;
-      color: #fff;
+      color: var(--text);
     }
 
     .font-sample {
@@ -720,7 +727,7 @@ ${cssVariables}
     .footer-author {
       font-size: 20px;
       font-weight: 800;
-      color: #fff;
+      color: var(--text);
       margin-bottom: 4px;
     }
 

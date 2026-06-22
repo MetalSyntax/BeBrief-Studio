@@ -19,15 +19,19 @@ export function EditableText(props: EditableTextProps) {
 
   // Sync internal ref text only when value changes externally (e.g. undo/redo/theme)
   useEffect(() => {
-    if (ref.current && ref.current.innerText !== value) {
-      ref.current.innerText = value
+    if (ref.current) {
+      const normalized = ref.current.innerText.replace(/\r\n/g, '\n')
+      if (normalized !== value) {
+        ref.current.innerText = value
+      }
     }
   }, [value])
 
   const handleBlur = () => {
     if (ref.current) {
-      const newText = ref.current.innerText
-      if (newText !== value) {
+      const newText = ref.current.innerText.replace(/\r\n/g, '\n').trimEnd()
+      const normalizedValue = value.replace(/\r\n/g, '\n').trimEnd()
+      if (newText !== normalizedValue) {
         onChange(newText)
       }
     }

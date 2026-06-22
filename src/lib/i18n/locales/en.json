@@ -76,6 +76,11 @@
       "hide": "Hide",
       "show": "Show",
       "delete": "Delete"
+    },
+    "global": {
+      "title": "Global Settings",
+      "activeTheme": "Active Theme",
+      "canvasColors": "Canvas Colors"
     }
   },
   "canvas": {
@@ -171,6 +176,14 @@
   },
   "themes": {
     "groupDark": "Dark Themes",
-    "groupLight": "Light Themes"
+    "groupLight": "Light Themes",
+    "groupAdvanced": "Advanced"
+  },
+  "mobile": {
+    "tabs": {
+      "sections": "Sections",
+      "canvas": "Canvas",
+      "inspector": "Properties"
+    }
   }
 }

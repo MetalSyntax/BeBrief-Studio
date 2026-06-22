@@ -9,29 +9,19 @@ export async function extractTextFromImage(
   onProgress: (pct: number) => void
 ): Promise<OcrBlock[]> {
   const { createWorker } = await import('tesseract.js')
-  
-  const worker = await (createWorker as any)({
+
+  // Tesseract.js v7 API: pass language and options directly to createWorker
+  const worker = await (createWorker as any)('spa+eng+por', 1, {
     logger: (m: any) => {
       if (m.status === 'recognizing text') {
         onProgress(Math.round(m.progress * 100))
       } else {
-        // Map other phases to some low initial progress
         onProgress(5)
       }
     }
   })
 
   try {
-    const langs = 'spa+eng+por'
-    // Tesseract.js v5+ has createWorker handle language loading internally or via loadLanguage.
-    // To ensure compatibility with v4 and v5:
-    if (typeof (worker as any).loadLanguage === 'function') {
-      await (worker as any).loadLanguage(langs)
-      if (typeof (worker as any).initialize === 'function') {
-        await (worker as any).initialize(langs)
-      }
-    }
-
     const imagePath = typeof imageSource === 'string' ? imageSource : URL.createObjectURL(imageSource)
     
     // Perform recognition

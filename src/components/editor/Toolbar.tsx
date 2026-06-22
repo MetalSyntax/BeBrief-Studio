@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useProjectStore } from '../../lib/store/projectStore'
 import type { ThemeId } from '../../lib/types/project.types'
+import { THEME_OPTIONS } from '../../lib/themes'
 import { Undo2, Redo2, Eye, Download, Sparkles, Copy, Printer, Home, Menu, X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { CustomSelect } from '../ui/CustomSelect'
@@ -25,32 +26,19 @@ export function Toolbar({ onExportHTML, onCopyHTML, onExportImage }: Props) {
     { value: 'pt', label: 'PT' },
   ]
 
-  const themeGroups = [
-    {
-      label: t('themes.groupDark', { defaultValue: 'Temas Oscuros' }),
-      options: [
-        { value: 'dark-editorial', label: 'Dark Editorial' },
-        { value: 'minimal', label: 'Minimal' },
-        { value: 'neon-noir', label: 'Neon Noir' },
-        { value: 'ocean-tech', label: 'Ocean Tech' },
-        { value: 'rose-editorial', label: 'Rose Editorial' },
-        { value: 'forest-sage', label: 'Forest Sage' },
-      ]
-    },
-    {
-      label: t('themes.groupLight', { defaultValue: 'Temas Claros' }),
-      options: [
-        { value: 'clean-light', label: 'Clean Light' },
-        { value: 'warm-parchment', label: 'Warm Parchment' },
-      ]
-    },
-    {
-      label: 'Avanzado',
-      options: [
-        { value: 'custom', label: '🎨 Tema Personalizado' }
-      ]
-    }
-  ]
+  const groupLabels: Record<string, string> = {
+    dark:     t('themes.groupDark',     { defaultValue: 'Temas Oscuros' }),
+    light:    t('themes.groupLight',    { defaultValue: 'Temas Claros' }),
+    advanced: t('themes.groupAdvanced', { defaultValue: 'Avanzado' }),
+  }
+
+  const themeGroups = Object.entries(
+    THEME_OPTIONS.reduce<Record<string, { value: string; label: string }[]>>((acc, opt) => {
+      if (!acc[opt.group]) acc[opt.group] = []
+      acc[opt.group].push({ value: opt.value, label: opt.label })
+      return acc
+    }, {})
+  ).map(([group, options]) => ({ label: groupLabels[group] ?? group, options }))
 
   return (
     <header className="h-16 border-b border-white/5 bg-[#13131a] px-6 flex items-center justify-between z-30 relative shrink-0">

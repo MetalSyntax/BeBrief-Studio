@@ -91,34 +91,37 @@ export function ProcessSection({ section, isEditing, onClick }: Props) {
                         e.stopPropagation()
                         setActiveIconPicker(null)
                       }} />
-                      <div className="absolute top-14 left-0 bg-[#13131a] border border-white/10 rounded-xl shadow-2xl z-50 p-2 grid grid-cols-3 gap-1.5 w-36">
+                      <div className="absolute top-14 left-0 bg-[#13131a] border border-white/10 rounded-xl shadow-2xl z-50 p-2 grid grid-cols-5 gap-1 w-52 max-h-48 overflow-y-auto">
                         {[
-                          { name: 'Search', icon: LucideIcons.Search },
-                          { name: 'Target', icon: LucideIcons.Target },
-                          { name: 'Layers', icon: LucideIcons.Layers },
-                          { name: 'Zap', icon: LucideIcons.Zap },
-                          { name: 'Award', icon: LucideIcons.Award },
-                          { name: 'Heart', icon: LucideIcons.Heart },
-                          { name: 'Code', icon: LucideIcons.Code },
-                          { name: 'Smile', icon: LucideIcons.Smile },
-                          { name: 'HelpCircle', icon: LucideIcons.HelpCircle }
-                        ].map(({ name, icon: PickerIcon }) => (
-                          <button
-                            key={name}
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              handleStepUpdate(index, 'icon', name)
-                              setActiveIconPicker(null)
-                            }}
-                            className={`p-2 rounded-lg hover:bg-white/5 flex items-center justify-center transition-all ${
-                              step.icon === name ? 'text-violet-400 bg-violet-500/10' : 'text-zinc-400'
-                            }`}
-                            title={name}
-                          >
-                            <PickerIcon size={16} />
-                          </button>
-                        ))}
+                          'Search', 'Target', 'Layers', 'Zap', 'Award',
+                          'Heart', 'Code', 'Smile', 'Pencil', 'Users',
+                          'Globe', 'Star', 'Clock', 'Check', 'ArrowRight',
+                          'Layout', 'Monitor', 'Cpu', 'Database', 'Shield',
+                          'Lock', 'Eye', 'Lightbulb', 'Palette', 'Image',
+                          'Video', 'FileText', 'Folder', 'Box', 'GitBranch',
+                          'Settings', 'Compass', 'Camera', 'Phone', 'Mail',
+                          'Link', 'Share2', 'Download', 'Upload', 'Bookmark',
+                          'Flag', 'HelpCircle'
+                        ].map((name) => {
+                          const PickerIcon = (LucideIcons as any)[name] || LucideIcons.HelpCircle
+                          return (
+                            <button
+                              key={name}
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                handleStepUpdate(index, 'icon', name)
+                                setActiveIconPicker(null)
+                              }}
+                              className={`p-1.5 rounded-lg hover:bg-white/5 flex items-center justify-center transition-all ${
+                                step.icon === name ? 'text-violet-400 bg-violet-500/10' : 'text-zinc-400'
+                              }`}
+                              title={name}
+                            >
+                              <PickerIcon size={14} />
+                            </button>
+                          )
+                        })}
                       </div>
                     </>
                   )}

@@ -18,7 +18,7 @@ import {
 import { CSS } from '@dnd-kit/utilities'
 import { useProjectStore } from '../../lib/store/projectStore'
 import type { Section, SectionType } from '../../lib/types/project.types'
-import { Eye, EyeOff, Trash2, GripVertical, Plus } from 'lucide-react'
+import { Eye, EyeOff, Trash2, GripVertical, Plus, Copy } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 // Sortable Item Component
@@ -28,6 +28,7 @@ interface SortableItemProps {
   onSelect: () => void
   onToggleVisible: (e: React.MouseEvent) => void
   onDelete: (e: React.MouseEvent) => void
+  onDuplicate: (e: React.MouseEvent) => void
 }
 
 function SortableSectionItem({
@@ -35,7 +36,8 @@ function SortableSectionItem({
   isActive,
   onSelect,
   onToggleVisible,
-  onDelete
+  onDelete,
+  onDuplicate
 }: SortableItemProps) {
   const { t } = useTranslation()
   const {
@@ -107,6 +109,14 @@ function SortableSectionItem({
           {section.visible ? <Eye size={14} /> : <EyeOff size={14} />}
         </button>
         <button
+          onClick={onDuplicate}
+          className="p-1.5 rounded-lg hover:bg-white/5 text-zinc-400 hover:text-white transition-colors"
+          title="Duplicar sección"
+          aria-label="Duplicar sección"
+        >
+          <Copy size={14} />
+        </button>
+        <button
           onClick={onDelete}
           className="p-1.5 rounded-lg hover:bg-red-500/10 text-zinc-400 hover:text-red-400 transition-colors"
           title={t('inspector.advanced.delete')}
@@ -129,6 +139,7 @@ export function SectionList() {
     reorderSections,
     addSection,
     deleteSection,
+    duplicateSection,
     toggleSectionVisibility
   } = useProjectStore()
 
@@ -205,6 +216,10 @@ export function SectionList() {
                   onToggleVisible={(e) => {
                     e.stopPropagation()
                     toggleSectionVisibility(sec.id)
+                  }}
+                  onDuplicate={(e) => {
+                    e.stopPropagation()
+                    duplicateSection(sec.id)
                   }}
                   onDelete={(e) => {
                     e.stopPropagation()

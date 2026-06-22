@@ -76,6 +76,11 @@
       "hide": "Ocultar",
       "show": "Mostrar",
       "delete": "Eliminar"
+    },
+    "global": {
+      "title": "Ajustes Globales",
+      "activeTheme": "Tema Activo",
+      "canvasColors": "Colores del Lienzo"
     }
   },
   "canvas": {
@@ -171,6 +176,14 @@
   },
   "themes": {
     "groupDark": "Temas Oscuros",
-    "groupLight": "Temas Claros"
+    "groupLight": "Temas Claros",
+    "groupAdvanced": "Avanzado"
+  },
+  "mobile": {
+    "tabs": {
+      "sections": "Secciones",
+      "canvas": "Lienzo",
+      "inspector": "Propiedades"
+    }
   }
 }

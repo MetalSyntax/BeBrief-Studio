@@ -1,31 +1,41 @@
-# 🎨 BeBrief Studio
+# BeBrief Studio
 
-A premium, interactive web application designed to help designers structure, prototype, and build stunning Case Study Briefs for Behance. Craft sections, customize color palettes, modify metrics, and export everything directly to standalone HTML, PDF, or high-resolution images.
-
----
-
-## ⚡ Key Features
-
-* **Live Editor Canvas**: Edit typography, titles, copy, and visual values directly in place on the canvas.
-* **Fully Responsive & Scaled Workspace**:
-  * **Desktop & Tablet**: Fluid responsive flow layout adjusting automatically to the remaining screen space while keeping properties and sections panels visible.
-  * **Mobile View (`< 768px`)**: Locks into a fixed `498px` layout representing a mobile device, automatically scaled down to fit any smartphone viewport without clipping or horizontal overflow.
-* **High-Resolution Exports**:
-  * Standalone HTML standalone package.
-  * High-quality **PNG** and **WEBP** images generated at a standard `1600px` Behance width.
-  * Multi-format document **PDF** exports.
-* **Dynamic Property Inspector**: Modify section background colors, text colors, paddings, and alignment settings on the fly.
-* **State Management**: Built with **Zustand** for lightweight, real-time reactive state updates.
-* **Internationalization**: Fully localized interface support.
+**v2.0.0** — A premium, modular case study editor for Behance. Build, style and export stunning project briefs with a live canvas, dedicated section editors, multi-project dashboard, JSON portability, and native macOS distribution via Tauri.
 
 ---
 
-## 🛠️ Technology Stack
+## Key Features
 
-* **Core**: React 18, TypeScript, Vite
-* **Styling**: Tailwind CSS, Lucide React (Icons)
-* **State Management**: Zustand
-* **Export Utilities**: `html-to-image`, `jspdf`
+* **Live Canvas Editing** — Click any text directly on the canvas to edit in place. Edits are instant with no modal dialogs.
+* **10 Section Types** — Cover, Overview, Problem, Process, Color Palette, Typography, Mockups, UX Flow, Results, Footer. Each has a dedicated inspector with full content and style controls.
+* **Multi-Project Dashboard** — Create, duplicate, delete and switch between projects. Export any project as a `.bbs.json` portable file; import it on any device.
+* **JSON Portability** — Save the entire project state (sections, styles, theme, custom tokens) to a versioned `.bbs.json` file and restore it later.
+* **Theme System** — 8 built-in themes plus a fully interactive custom theme creator with live color pickers and typography selectors. All themes powered by CSS custom properties.
+* **Per-Section Font Override** — Override the display font on any individual section independently of the global theme.
+* **Auto-Zoom Canvas** — The canvas scales to fit any viewport width automatically. Works on both desktop and mobile.
+* **High-Resolution Exports** — Standalone HTML (self-contained with inlined CSS), PNG and WebP images at `1600px` Behance width.
+* **Keyboard Shortcuts** — `Cmd/Ctrl+Z` undo, `Cmd/Ctrl+Shift+Z` redo, `Escape` to deselect.
+* **Undo / Redo** — 30-step history for every section and style mutation.
+* **Duplicate Section** — One-click section duplication in the sidebar.
+* **Toast Notifications** — Non-blocking success/error/info feedback for all actions.
+* **OCR Image Import** — Tesseract.js v7 OCR to extract text from uploaded images and map it to section fields.
+* **Progressive Web App** — Installable PWA with offline support and Google Fonts cached via Workbox.
+* **Native macOS App** — Tauri v2 desktop wrapper with native file save dialogs and binary image write support.
+* **i18n** — Full UI localization in English, Spanish and Portuguese.
+* **Mobile Tab Bar** — Three-tab bottom navigation (Sections / Canvas / Inspector) on narrow viewports.
+
+---
+
+## Technology Stack
+
+* **Core**: React 19, TypeScript, Vite 8
+* **Styling**: Tailwind CSS v4, Lucide React
+* **State**: Zustand (single store, undo/redo stacks)
+* **DnD**: `@dnd-kit/sortable`
+* **Export**: `html-to-image`, custom HTML serializer
+* **OCR**: Tesseract.js v7
+* **Desktop**: Tauri v2 (`@tauri-apps/cli`, `plugin-fs`, `plugin-dialog`)
+* **PWA**: `vite-plugin-pwa` + Workbox
 * **i18n**: `react-i18next`
 
 ---
@@ -55,42 +65,13 @@ A premium, interactive web application designed to help designers structure, pro
 
 ---
 
-## 📝 Changelog
+## Getting Started
 
-### [v1.2.0] - 2026-06-22
+```bash
+npm install
+npm run dev          # dev server with HMR
+npm run build        # type-check + production build
+npm run tauri build  # native macOS .app / .dmg
+```
 
-#### 🚀 Added
-- **Diseñador de Temas Personalizados**: Panel global interactivo con selectores de color nativos (lienzo, secciones, tarjetas, acento) y selectores tipográficos (fuentes de títulos, párrafos y redondeado de bordes) que se guardan e importan/exportan.
-- **Menú Hamburguesa Responsivo**: Menú colapsable en cabecera optimizado para tablets y móviles que agrupa todas las herramientas, idiomas, exportaciones e historial de forma limpia.
-- **Edición de Texto Instantánea**: Habilitado el atributo `contentEditable` permanente en todos los textos del lienzo para editarlos en un solo clic, con foco y des-foco automático al hacer clic fuera del lienzo.
-- **Selector Visual de Iconos**: Panel flotante en forma de cuadrícula (`grid`) con iconos reales de Lucide para la sección de Proceso, reemplazando la lista descolgable de texto estándar.
-- **Selectores Customizados de UI**: Creado el componente accesible `CustomSelect` para reemplazar todos los selectores HTML nativos del proyecto por una versión oscura y consistente con el diseño de la aplicación.
-- **Pipeline de Tauri & Automatización (CI/CD)**: Compilado el instalador nativo de macOS (`.app` y `.dmg`) y creado el script `local-ci.sh` para automatizar builds y despliegues directamente a `/Applications`.
-
----
-
-### [v1.1.0] - 2026-06-20
-
-#### 🚀 Added
-- **Mobile Locked Layout**: Locked canvas layout width to `498px` on screens below `768px` wide, scaling the canvas dynamically with `transform: scale` so it fits viewports like iPhone/Android without horizontal scrolling.
-- **Responsive Tablet/Desktop Flow**: Set default zoom auto-mode to a native `w-full` fluid flow. Canvas content wraps and centers dynamically.
-- **Image Export Resolution Locking**: Added forced `1600px` layout rendering during export compilation to ensure high-resolution PNG & WEBP output even when viewing scaled layouts.
-- **PWA & Tauri Roadmap**: Drafted detailed setup plans under the `.plans/` directory for progressive web app packaging and desktop app distribution with Tauri.
-
-#### 🔧 Fixed
-- **Canvas Scaling Cutoff**: Solved left-edge clipping by introducing a dynamic scaled-size wrapper, replacing `top center` origins with `top left` offsets.
-- **Flexbox Sidebar Push**: Added `min-w-0` to the editor's workspace center column, preventing canvas container layout expansion from pushing sidebars off-screen.
-- **Inline Text Editing**: Resolved live edit cursor bugs in text nodes on active sections.
-
-#### 🗑️ Chore
-- Initialized local Git repository setup.
-
----
-
-### [v1.0.0] - 2026-06-15
-
-#### 🚀 Added
-- Core builder layout featuring dynamic interactive panels: Sections list (left), Editor canvas (center), Property inspector (right).
-- Initial section templates: Cover, Overview, Color Palette, Typography, Mockups, Problem, Process, Results, Footer.
-- Standalone HTML exporter.
-- Multi-language translation setup.
+See [CHANGELOG.md](CHANGELOG.md) for full version history.

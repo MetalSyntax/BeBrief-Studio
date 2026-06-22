@@ -63,6 +63,7 @@ export interface SectionStyle {
   accentColor: string
   padding?: string
   width?: '1600px' | '1200px' | '100%'
+  displayFont?: string
 }
 
 // Data structures for core sections

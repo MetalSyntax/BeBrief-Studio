@@ -24,6 +24,7 @@ interface ProjectState {
   reorderSections: (sections: Section[]) => void
   addSection: (type: SectionType) => void
   deleteSection: (sectionId: string) => void
+  duplicateSection: (sectionId: string) => void
   toggleSectionVisibility: (sectionId: string) => void
   undo: () => void
   redo: () => void
@@ -34,6 +35,7 @@ interface ProjectState {
   duplicateProject: (id: string) => void
   selectProject: (id: string) => void
   updateProjectTitle: (title: string) => void
+  importProject: (project: Project) => void
 }
 
 const createInitialProject = (id = 'default-project', title = 'Mi Case Study de Behance', theme: ThemeId = 'dark-editorial'): Project => {
@@ -397,6 +399,40 @@ export const useProjectStore = create<ProjectState>((set, get) => {
       })
     },
 
+    duplicateSection: (sectionId) => {
+      const { project } = get()
+      const historyUpdate = saveToHistory(project)
+
+      const sourceIndex = project.sections.findIndex(s => s.id === sectionId)
+      if (sourceIndex === -1) return
+
+      const source = project.sections[sourceIndex]
+      const clone: Section = {
+        ...JSON.parse(JSON.stringify(source)),
+        id: `${source.type}-${Date.now()}`,
+        order: sourceIndex + 1,
+      }
+
+      const newSections = [
+        ...project.sections.slice(0, sourceIndex + 1),
+        clone,
+        ...project.sections.slice(sourceIndex + 1),
+      ].map((sec, idx) => ({ ...sec, order: idx }))
+
+      const newProject = {
+        ...project,
+        sections: newSections,
+        updatedAt: new Date().toISOString(),
+      }
+
+      set({
+        project: newProject,
+        activeSectionId: clone.id,
+        ...historyUpdate,
+        ...syncProjectsList(newProject),
+      })
+    },
+
     toggleSectionVisibility: (sectionId) => {
       const { project } = get()
       const historyUpdate = saveToHistory(project)
@@ -489,10 +525,7 @@ export const useProjectStore = create<ProjectState>((set, get) => {
 
     deleteProject: (id) => {
       const { projects, project } = get()
-      if (projects.length <= 1) {
-        alert(i18n.t('dashboard.alertMinProjects', { defaultValue: 'Debes conservar al menos un proyecto en el dashboard.' }))
-        return
-      }
+      if (projects.length <= 1) return
 
       const newProjects = projects.filter((p) => p.id !== id)
       saveProjectsToLS(newProjects)
@@ -561,6 +594,25 @@ export const useProjectStore = create<ProjectState>((set, get) => {
         project: newProject,
         ...historyUpdate,
         ...syncProjectsList(newProject),
+      })
+    },
+
+    importProject: (imported) => {
+      const { projects } = get()
+      const exists = projects.some((p) => p.id === imported.id)
+      const finalProject = exists
+        ? { ...imported, id: `project-import-${Date.now()}` }
+        : imported
+      const newProjects = [...projects, finalProject]
+      saveProjectsToLS(newProjects)
+      applyTheme(finalProject.theme, finalProject.customTheme)
+      set({
+        projects: newProjects,
+        project: finalProject,
+        view: 'editor',
+        activeSectionId: null,
+        past: [],
+        future: [],
       })
     },
   }

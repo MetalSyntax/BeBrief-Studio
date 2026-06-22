@@ -33,12 +33,9 @@ export function EditorCanvas() {
       const isMobile = window.innerWidth < 768
       const parentWidth = containerRef.current.clientWidth - (isMobile ? 24 : 48)
       const targetWidth = isMobile ? 498 : 1600
-      
-      if (isMobile) {
-        setZoomScale(Math.min(1, parentWidth / targetWidth))
-      } else {
-        setZoomScale(1)
-      }
+
+      // Scale to fit on both mobile and any desktop narrower than 1600px
+      setZoomScale(Math.min(1, parentWidth / targetWidth))
     }
 
     handleResize()
@@ -162,35 +159,24 @@ export function EditorCanvas() {
       >
         {/* Dynamic size wrapper to preserve scaled dimensions in browser layout */}
         <div
-          style={
-            zoomMode === 'auto' && !isMobileView
-              ? { width: '100%', height: 'auto' }
-              : {
-                  width: `${(isMobileView ? 498 : 1600) * zoomScale}px`,
-                  height: canvasHeight ? `${canvasHeight * zoomScale}px` : 'auto',
-                  transition: 'width 150ms ease-out, height 150ms ease-out',
-                }
-          }
-          className={`${zoomMode === 'auto' && !isMobileView ? 'w-full' : 'shrink-0'} flex justify-start items-start overflow-hidden rounded-2xl mx-auto`}
+          style={{
+            width: `${(isMobileView ? 498 : 1600) * zoomScale}px`,
+            height: canvasHeight ? `${canvasHeight * zoomScale}px` : 'auto',
+            transition: 'width 150ms ease-out, height 150ms ease-out',
+          }}
+          className="shrink-0 flex justify-start items-start overflow-hidden rounded-2xl mx-auto"
         >
           {/* Scaled Inner Canvas */}
-          <div 
+          <div
             ref={canvasRef}
             id="brief-canvas-export"
-            style={
-              zoomMode === 'auto' && !isMobileView
-                ? {
-                    width: '100%',
-                    transform: 'none',
-                  }
-                : {
-                    width: `${isMobileView ? 498 : 1600}px`,
-                    transform: `scale(${zoomScale})`,
-                    transformOrigin: 'top left',
-                    transition: 'transform 150ms ease-out',
-                  }
-            }
-            className={`shadow-2xl border border-white/5 rounded-2xl overflow-hidden shrink-0 flex flex-col bg-[#13131a] ${zoomMode === 'auto' && !isMobileView ? 'w-full' : ''}`}
+            style={{
+              width: `${isMobileView ? 498 : 1600}px`,
+              transform: `scale(${zoomScale})`,
+              transformOrigin: 'top left',
+              transition: 'transform 150ms ease-out',
+            }}
+            className="shadow-2xl border border-white/5 rounded-2xl overflow-hidden shrink-0 flex flex-col bg-[#13131a]"
           >
             {sortedSections.length === 0 ? (
               <div className="bg-[#13131a] p-24 text-center border border-white/5 rounded-2xl text-zinc-400">

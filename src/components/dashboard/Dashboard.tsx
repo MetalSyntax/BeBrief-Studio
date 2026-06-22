@@ -1,10 +1,41 @@
+import { useRef } from 'react'
 import { useProjectStore } from '../../lib/store/projectStore'
-import { Plus, Copy, Trash2, ArrowRight, Sparkles, LayoutGrid, Calendar } from 'lucide-react'
+import { downloadProjectJSON, parseProjectFromJSON } from '../../lib/export/jsonPortability'
+import { useToast } from '../shared/ToastProvider'
+import { Plus, Copy, Trash2, ArrowRight, Sparkles, LayoutGrid, Calendar, Download, Upload } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 export function Dashboard() {
   const { t, i18n } = useTranslation()
-  const { projects, createNewProject, deleteProject, duplicateProject, selectProject } = useProjectStore()
+  const { projects, createNewProject, deleteProject, duplicateProject, selectProject, importProject } = useProjectStore()
+  const toast = useToast()
+  const importInputRef = useRef<HTMLInputElement>(null)
+
+  const handleDeleteProject = (id: string) => {
+    if (projects.length <= 1) {
+      toast.error(t('dashboard.alertMinProjects', { defaultValue: 'Debes conservar al menos un proyecto en el dashboard.' }))
+      return
+    }
+    deleteProject(id)
+  }
+
+  const handleImportJSON = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = (ev) => {
+      const text = ev.target?.result as string
+      const project = parseProjectFromJSON(text)
+      if (!project) {
+        toast.error('Archivo inválido. Asegúrate de importar un .bbs.json generado por BeBrief Studio.')
+        return
+      }
+      importProject(project)
+      toast.success(`Proyecto "${project.title}" importado correctamente.`)
+    }
+    reader.readAsText(file)
+    e.target.value = ''
+  }
 
   const templates = [
     {
@@ -62,6 +93,20 @@ export function Dashboard() {
             </h1>
           </div>
         </div>
+        <button
+          onClick={() => importInputRef.current?.click()}
+          className="flex items-center gap-2 px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 border border-white/10 hover:border-white/20 rounded-lg text-zinc-400 hover:text-white text-xs font-medium transition-colors"
+        >
+          <Upload size={13} />
+          {t('dashboard.importJSON', { defaultValue: 'Importar .bbs.json' })}
+        </button>
+        <input
+          ref={importInputRef}
+          type="file"
+          accept=".json,.bbs.json"
+          className="hidden"
+          onChange={handleImportJSON}
+        />
       </header>
 
       {/* Hero Section */}
@@ -160,7 +205,18 @@ export function Dashboard() {
                     <button
                       onClick={(e) => {
                         e.stopPropagation()
-                        deleteProject(proj.id)
+                        downloadProjectJSON(proj)
+                      }}
+                      className="p-2 bg-zinc-900 border border-white/10 hover:border-white/20 rounded-lg text-zinc-400 hover:text-white transition-colors"
+                      title={t('dashboard.exportJSON', { defaultValue: 'Exportar JSON' })}
+                      aria-label={t('dashboard.exportJSON', { defaultValue: 'Exportar JSON' })}
+                    >
+                      <Download size={12} />
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        handleDeleteProject(proj.id)
                       }}
                       className="p-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 rounded-lg text-red-400 transition-colors"
                       title={t('dashboard.deleteStudy', { defaultValue: 'Eliminar Proyecto' })}

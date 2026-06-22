@@ -37,7 +37,7 @@
       "eyebrow": "Eyebrow (Rótulo)",
       "mainTitle": "Título Principal",
       "subtitle": "Subtítulo",
-      "titleSize": "Tamanhoo do Título",
+      "titleSize": "Tamanho do Título",
       "alignment": "Alinhamento",
       "alignLeft": "Esquerda",
       "alignCenter": "Centralizado",
@@ -76,6 +76,11 @@
       "hide": "Ocultar",
       "show": "Mostrar",
       "delete": "Excluir"
+    },
+    "global": {
+      "title": "Configurações Globais",
+      "activeTheme": "Tema Ativo",
+      "canvasColors": "Cores do Canvas"
     }
   },
   "canvas": {
@@ -171,6 +176,14 @@
   },
   "themes": {
     "groupDark": "Temas Escuros",
-    "groupLight": "Temas Claros"
+    "groupLight": "Temas Claros",
+    "groupAdvanced": "Avançado"
+  },
+  "mobile": {
+    "tabs": {
+      "sections": "Seções",
+      "canvas": "Tela",
+      "inspector": "Propriedades"
+    }
   }
 }

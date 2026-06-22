@@ -144,6 +144,19 @@ export const themes: Record<Exclude<ThemeId, 'custom'>, ThemeTokens> = {
   'forest-sage': forestSage,
 }
 
+// Single source of truth for the theme list — imported by Toolbar and SectionInspector
+export const THEME_OPTIONS = [
+  { value: 'dark-editorial', label: 'Dark Editorial', group: 'dark' },
+  { value: 'minimal',        label: 'Minimal',        group: 'dark' },
+  { value: 'neon-noir',      label: 'Neon Noir',      group: 'dark' },
+  { value: 'ocean-tech',     label: 'Ocean Tech',     group: 'dark' },
+  { value: 'rose-editorial', label: 'Rose Editorial', group: 'dark' },
+  { value: 'forest-sage',    label: 'Forest Sage',    group: 'dark' },
+  { value: 'clean-light',    label: 'Clean Light',    group: 'light' },
+  { value: 'warm-parchment', label: 'Warm Parchment', group: 'light' },
+  { value: 'custom',         label: '🎨 Tema Personalizado', group: 'advanced' },
+] as const
+
 export function applyTheme(themeId: ThemeId, customTheme?: ThemeTokens) {
   const theme = themeId === 'custom' 
     ? (customTheme || defaultCustomTheme) 

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useProjectStore } from '../../lib/store/projectStore'
+import { THEME_OPTIONS } from '../../lib/themes'
 import { Info, Trash2, Plus, Eye, EyeOff, ScanText } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { ImageUploader } from '../shared/ImageUploader'
@@ -48,7 +49,7 @@ export function SectionInspector() {
       <aside className="w-80 bg-[#13131a] border-l border-white/5 flex flex-col h-full overflow-y-auto shrink-0 scrollbar-thin scrollbar-thumb-white/10">
         <div className="p-4 border-b border-white/5 flex items-center justify-between">
           <span className="text-xs font-mono font-bold tracking-wider text-zinc-400 uppercase">
-            Ajustes Globales
+            {t('inspector.global.title')}
           </span>
         </div>
 
@@ -56,31 +57,25 @@ export function SectionInspector() {
           {/* Active Theme selector */}
           <div className="space-y-2">
             <label className="text-[10px] font-mono font-bold tracking-wider text-zinc-500 block uppercase">
-              Tema Activo
+              {t('inspector.global.activeTheme')}
             </label>
             <CustomSelect
               value={project.theme}
               onChange={(val) => setTheme(val as any)}
-              groups={[
-                {
-                  label: 'Temas Predeterminados',
-                  options: [
-                    { value: 'dark-editorial', label: 'Dark Editorial' },
-                    { value: 'clean-light', label: 'Clean Light' },
-                    { value: 'minimal', label: 'Minimal' },
-                    { value: 'neon-noir', label: 'Neon Noir' },
-                    { value: 'ocean-tech', label: 'Ocean Tech' },
-                    { value: 'rose-editorial', label: 'Rose Editorial' },
-                    { value: 'forest-sage', label: 'Forest Sage' },
-                  ]
-                },
-                {
-                  label: 'Avanzado',
-                  options: [
-                    { value: 'custom', label: '🎨 Tema Personalizado' }
-                  ]
+              groups={(() => {
+                const groupLabels: Record<string, string> = {
+                  dark:     t('themes.groupDark',     { defaultValue: 'Temas Oscuros' }),
+                  light:    t('themes.groupLight',    { defaultValue: 'Temas Claros' }),
+                  advanced: t('themes.groupAdvanced', { defaultValue: 'Avanzado' }),
                 }
-              ]}
+                return Object.entries(
+                  THEME_OPTIONS.reduce<Record<string, { value: string; label: string }[]>>((acc, opt) => {
+                    if (!acc[opt.group]) acc[opt.group] = []
+                    acc[opt.group].push({ value: opt.value, label: opt.label })
+                    return acc
+                  }, {})
+                ).map(([group, options]) => ({ label: groupLabels[group] ?? group, options }))
+              })()}
               className="w-full"
               triggerClassName="w-full py-2 justify-between bg-zinc-900 border border-white/10 text-xs"
               dropdownClassName="w-full"
@@ -93,7 +88,7 @@ export function SectionInspector() {
 
               {/* Colors section */}
               <div className="space-y-3">
-                <span className="text-[10px] text-zinc-500 font-mono font-bold tracking-wider uppercase block">Colores del Lienzo</span>
+                <span className="text-[10px] text-zinc-500 font-mono font-bold tracking-wider uppercase block">{t('inspector.global.canvasColors')}</span>
                 
                 {/* Background color */}
                 <div className="space-y-1">
@@ -805,6 +800,416 @@ export function SectionInspector() {
     )
   }
 
+  // Problem section editor
+  const renderProblemEditor = (data: any) => (
+    <div className="space-y-4">
+      <div className="grid grid-cols-3 gap-2">
+        <div className="col-span-1">
+          <label className="text-[10px] font-mono font-bold tracking-wider text-zinc-500 block mb-1 uppercase">{t('inspector.field.sectionNumber')}</label>
+          <input
+            type="text"
+            value={data.sectionNumber || ''}
+            onChange={(e) => handleDataChange('sectionNumber', e.target.value)}
+            className="w-full bg-zinc-900 border border-white/10 rounded-lg text-xs px-3 py-2 text-white focus:outline-none"
+          />
+        </div>
+        <div className="col-span-2">
+          <label className="text-[10px] font-mono font-bold tracking-wider text-zinc-500 block mb-1 uppercase">{t('inspector.field.sectionTitle')}</label>
+          <input
+            type="text"
+            value={data.title || ''}
+            onChange={(e) => handleDataChange('title', e.target.value)}
+            className="w-full bg-zinc-900 border border-white/10 rounded-lg text-xs px-3 py-2 text-white focus:outline-none"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label className="text-[10px] font-mono font-bold tracking-wider text-zinc-500 block mb-1 uppercase">{t('inspector.field.layout')}</label>
+        <CustomSelect
+          value={data.layout || 'right-image'}
+          onChange={(val) => handleDataChange('layout', val)}
+          options={[
+            { value: 'right-image', label: 'Imagen a la Derecha' },
+            { value: 'left-image', label: 'Imagen a la Izquierda' },
+          ]}
+          className="w-full"
+          triggerClassName="w-full py-2 justify-between"
+          dropdownClassName="w-full"
+        />
+      </div>
+
+      <div>
+        <label className="text-[10px] font-mono font-bold tracking-wider text-zinc-500 block mb-1 uppercase">{t('inspector.field.description')}</label>
+        <textarea
+          rows={5}
+          value={data.description || ''}
+          onChange={(e) => handleDataChange('description', e.target.value)}
+          className="w-full bg-zinc-900 border border-white/10 rounded-lg text-xs px-3 py-2 text-white focus:outline-none resize-none"
+        />
+      </div>
+
+      <ImageUploader
+        label={t('inspector.field.imageUrl')}
+        value={data.image || ''}
+        onChange={(val) => handleDataChange('image', val)}
+        withOcr={true}
+        onOcrClick={() => setOcrOpen(true)}
+      />
+    </div>
+  )
+
+  // Process section editor
+  const renderProcessEditor = (data: any) => {
+    const PROCESS_ICONS = [
+      'Search', 'Target', 'Layers', 'Zap', 'Award', 'Heart', 'Code', 'Smile',
+      'Pencil', 'Users', 'Globe', 'Star', 'Clock', 'Check', 'ArrowRight',
+      'Layout', 'Monitor', 'Cpu', 'Database', 'Shield', 'Lock', 'Eye',
+      'Lightbulb', 'Palette', 'Image', 'Video', 'FileText', 'Folder', 'Box',
+      'GitBranch', 'Settings', 'Compass', 'Camera', 'Phone', 'Mail', 'Link',
+      'Share2', 'Download', 'Upload', 'Bookmark', 'Flag', 'HelpCircle'
+    ]
+
+    const handleStepChange = (index: number, field: string, value: string) => {
+      const updatedSteps = [...(data.steps || [])]
+      updatedSteps[index] = { ...updatedSteps[index], [field]: value }
+      handleDataChange('steps', updatedSteps)
+    }
+
+    const addStep = () => {
+      const updatedSteps = [...(data.steps || []), { title: 'Nuevo Paso', description: 'Descripción del paso', icon: 'Zap' }]
+      handleDataChange('steps', updatedSteps)
+    }
+
+    const removeStep = (index: number) => {
+      const updatedSteps = (data.steps || []).filter((_: any, i: number) => i !== index)
+      handleDataChange('steps', updatedSteps)
+    }
+
+    return (
+      <div className="space-y-4">
+        <div className="grid grid-cols-3 gap-2">
+          <div className="col-span-1">
+            <label className="text-[10px] font-mono font-bold tracking-wider text-zinc-500 block mb-1 uppercase">{t('inspector.field.sectionNumber')}</label>
+            <input
+              type="text"
+              value={data.sectionNumber || ''}
+              onChange={(e) => handleDataChange('sectionNumber', e.target.value)}
+              className="w-full bg-zinc-900 border border-white/10 rounded-lg text-xs px-3 py-2 text-white focus:outline-none"
+            />
+          </div>
+          <div className="col-span-2">
+            <label className="text-[10px] font-mono font-bold tracking-wider text-zinc-500 block mb-1 uppercase">{t('inspector.field.sectionTitle')}</label>
+            <input
+              type="text"
+              value={data.title || ''}
+              onChange={(e) => handleDataChange('title', e.target.value)}
+              className="w-full bg-zinc-900 border border-white/10 rounded-lg text-xs px-3 py-2 text-white focus:outline-none"
+            />
+          </div>
+        </div>
+
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <label className="text-[10px] font-mono font-bold tracking-wider text-zinc-500 uppercase">Pasos del Proceso</label>
+            <button
+              onClick={addStep}
+              className="text-[10px] flex items-center gap-1 text-violet-400 hover:text-white transition-colors"
+            >
+              <Plus size={10} /> Añadir Paso
+            </button>
+          </div>
+
+          <div className="space-y-3 max-h-80 overflow-y-auto pr-1">
+            {(data.steps || []).map((step: any, index: number) => (
+              <div key={index} className="bg-white/[0.01] border border-white/5 p-3 rounded-lg space-y-2 relative">
+                <button
+                  onClick={() => removeStep(index)}
+                  className="absolute top-2 right-2 p-1 hover:bg-red-500/10 text-zinc-500 hover:text-red-400 rounded"
+                >
+                  <Trash2 size={12} />
+                </button>
+
+                <div className="flex items-center gap-1.5 pr-6">
+                  <span className="text-[10px] font-mono text-zinc-600 font-bold">0{index + 1}</span>
+                  <CustomSelect
+                    value={step.icon || 'Zap'}
+                    onChange={(val) => handleStepChange(index, 'icon', val)}
+                    options={PROCESS_ICONS.map(name => ({ value: name, label: name }))}
+                    className="flex-1"
+                    triggerClassName="w-full py-1 justify-between bg-zinc-900 text-[11px]"
+                    dropdownClassName="w-full"
+                  />
+                </div>
+
+                <input
+                  type="text"
+                  placeholder="Título del paso"
+                  value={step.title || ''}
+                  onChange={(e) => handleStepChange(index, 'title', e.target.value)}
+                  className="w-full bg-zinc-900 border border-white/10 rounded px-2 py-1 text-xs text-white"
+                />
+                <textarea
+                  rows={2}
+                  placeholder="Descripción del paso"
+                  value={step.description || ''}
+                  onChange={(e) => handleStepChange(index, 'description', e.target.value)}
+                  className="w-full bg-zinc-900 border border-white/10 rounded px-2 py-1 text-xs text-white resize-none"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Typography section editor
+  const renderTypographyEditor = (data: any) => {
+    const PERMITTED_FONTS = [
+      'Montserrat', 'Sora', 'Manrope', 'Space Grotesk', 'DM Sans', 'Inter', 'Bebas Neue', 'Playfair Display'
+    ]
+
+    const handleFontChange = (index: number, field: string, value: string) => {
+      const updatedFonts = [...(data.fonts || [])]
+      updatedFonts[index] = { ...updatedFonts[index], [field]: value }
+      handleDataChange('fonts', updatedFonts)
+    }
+
+    const addFont = () => {
+      const updatedFonts = [...(data.fonts || []), { name: 'Inter', role: 'Body', sample: 'The quick brown fox' }]
+      handleDataChange('fonts', updatedFonts)
+    }
+
+    const removeFont = (index: number) => {
+      const updatedFonts = (data.fonts || []).filter((_: any, i: number) => i !== index)
+      handleDataChange('fonts', updatedFonts)
+    }
+
+    return (
+      <div className="space-y-4">
+        <div className="grid grid-cols-3 gap-2">
+          <div className="col-span-1">
+            <label className="text-[10px] font-mono font-bold tracking-wider text-zinc-500 block mb-1 uppercase">{t('inspector.field.sectionNumber')}</label>
+            <input
+              type="text"
+              value={data.sectionNumber || ''}
+              onChange={(e) => handleDataChange('sectionNumber', e.target.value)}
+              className="w-full bg-zinc-900 border border-white/10 rounded-lg text-xs px-3 py-2 text-white focus:outline-none"
+            />
+          </div>
+          <div className="col-span-2">
+            <label className="text-[10px] font-mono font-bold tracking-wider text-zinc-500 block mb-1 uppercase">{t('inspector.field.sectionTitle')}</label>
+            <input
+              type="text"
+              value={data.title || ''}
+              onChange={(e) => handleDataChange('title', e.target.value)}
+              className="w-full bg-zinc-900 border border-white/10 rounded-lg text-xs px-3 py-2 text-white focus:outline-none"
+            />
+          </div>
+        </div>
+
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <label className="text-[10px] font-mono font-bold tracking-wider text-zinc-500 uppercase">Tipografías</label>
+            <button
+              onClick={addFont}
+              className="text-[10px] flex items-center gap-1 text-violet-400 hover:text-white transition-colors"
+            >
+              <Plus size={10} /> Añadir Fuente
+            </button>
+          </div>
+
+          <div className="space-y-3 max-h-80 overflow-y-auto pr-1">
+            {(data.fonts || []).map((font: any, index: number) => (
+              <div key={index} className="bg-white/[0.01] border border-white/5 p-3 rounded-lg space-y-2 relative">
+                <button
+                  onClick={() => removeFont(index)}
+                  className="absolute top-2 right-2 p-1 hover:bg-red-500/10 text-zinc-500 hover:text-red-400 rounded"
+                >
+                  <Trash2 size={12} />
+                </button>
+
+                <div className="pr-6">
+                  <label className="text-[10px] text-zinc-500 block mb-1">Familia tipográfica</label>
+                  <CustomSelect
+                    value={font.name || 'Inter'}
+                    onChange={(val) => handleFontChange(index, 'name', val)}
+                    options={PERMITTED_FONTS.map(f => ({ value: f, label: f }))}
+                    className="w-full"
+                    triggerClassName="w-full py-1.5 justify-between bg-zinc-900 text-xs"
+                    dropdownClassName="w-full"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="text-[10px] text-zinc-500 block mb-1">Rol / Uso</label>
+                    <input
+                      type="text"
+                      placeholder="Display, Body, Mono..."
+                      value={font.role || ''}
+                      onChange={(e) => handleFontChange(index, 'role', e.target.value)}
+                      className="w-full bg-zinc-900 border border-white/10 rounded px-2 py-1 text-xs text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[10px] text-zinc-500 block mb-1">Texto de muestra</label>
+                    <input
+                      type="text"
+                      placeholder="Aa Bb Cc 123"
+                      value={font.sample || ''}
+                      onChange={(e) => handleFontChange(index, 'sample', e.target.value)}
+                      className="w-full bg-zinc-900 border border-white/10 rounded px-2 py-1 text-xs text-white"
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Results section editor
+  const renderResultsEditor = (data: any) => {
+    const handleMetricChange = (index: number, field: string, value: string) => {
+      const updatedMetrics = [...(data.metrics || [])]
+      updatedMetrics[index] = { ...updatedMetrics[index], [field]: value }
+      handleDataChange('metrics', updatedMetrics)
+    }
+
+    const addMetric = () => {
+      const updatedMetrics = [...(data.metrics || []), { value: '0%', label: 'Nueva Métrica' }]
+      handleDataChange('metrics', updatedMetrics)
+    }
+
+    const removeMetric = (index: number) => {
+      const updatedMetrics = (data.metrics || []).filter((_: any, i: number) => i !== index)
+      handleDataChange('metrics', updatedMetrics)
+    }
+
+    return (
+      <div className="space-y-4">
+        <div className="grid grid-cols-3 gap-2">
+          <div className="col-span-1">
+            <label className="text-[10px] font-mono font-bold tracking-wider text-zinc-500 block mb-1 uppercase">{t('inspector.field.sectionNumber')}</label>
+            <input
+              type="text"
+              value={data.sectionNumber || ''}
+              onChange={(e) => handleDataChange('sectionNumber', e.target.value)}
+              className="w-full bg-zinc-900 border border-white/10 rounded-lg text-xs px-3 py-2 text-white focus:outline-none"
+            />
+          </div>
+          <div className="col-span-2">
+            <label className="text-[10px] font-mono font-bold tracking-wider text-zinc-500 block mb-1 uppercase">{t('inspector.field.sectionTitle')}</label>
+            <input
+              type="text"
+              value={data.title || ''}
+              onChange={(e) => handleDataChange('title', e.target.value)}
+              className="w-full bg-zinc-900 border border-white/10 rounded-lg text-xs px-3 py-2 text-white focus:outline-none"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label className="text-[10px] font-mono font-bold tracking-wider text-zinc-500 block mb-1 uppercase">{t('inspector.field.description')}</label>
+          <textarea
+            rows={4}
+            value={data.description || ''}
+            onChange={(e) => handleDataChange('description', e.target.value)}
+            className="w-full bg-zinc-900 border border-white/10 rounded-lg text-xs px-3 py-2 text-white focus:outline-none resize-none"
+          />
+        </div>
+
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <label className="text-[10px] font-mono font-bold tracking-wider text-zinc-500 uppercase">Métricas / KPIs</label>
+            <button
+              onClick={addMetric}
+              className="text-[10px] flex items-center gap-1 text-violet-400 hover:text-white transition-colors"
+            >
+              <Plus size={10} /> Añadir Métrica
+            </button>
+          </div>
+
+          <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
+            {(data.metrics || []).map((metric: any, index: number) => (
+              <div key={index} className="flex gap-2 items-center bg-white/[0.01] p-2 border border-white/5 rounded-lg">
+                <input
+                  type="text"
+                  placeholder="Valor (ej: +47%)"
+                  value={metric.value || ''}
+                  onChange={(e) => handleMetricChange(index, 'value', e.target.value)}
+                  className="w-24 bg-zinc-900 border border-white/10 rounded px-2 py-1 text-xs text-white font-mono"
+                />
+                <input
+                  type="text"
+                  placeholder="Etiqueta"
+                  value={metric.label || ''}
+                  onChange={(e) => handleMetricChange(index, 'label', e.target.value)}
+                  className="flex-1 min-w-0 bg-zinc-900 border border-white/10 rounded px-2 py-1 text-xs text-white"
+                />
+                <button
+                  onClick={() => removeMetric(index)}
+                  className="p-1 hover:bg-red-500/10 text-zinc-500 hover:text-red-400 rounded shrink-0"
+                >
+                  <Trash2 size={12} />
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // UX Flow section editor
+  const renderUXFlowEditor = (data: any) => (
+    <div className="space-y-4">
+      <div className="grid grid-cols-3 gap-2">
+        <div className="col-span-1">
+          <label className="text-[10px] font-mono font-bold tracking-wider text-zinc-500 block mb-1 uppercase">{t('inspector.field.sectionNumber')}</label>
+          <input
+            type="text"
+            value={data.sectionNumber || ''}
+            onChange={(e) => handleDataChange('sectionNumber', e.target.value)}
+            className="w-full bg-zinc-900 border border-white/10 rounded-lg text-xs px-3 py-2 text-white focus:outline-none"
+          />
+        </div>
+        <div className="col-span-2">
+          <label className="text-[10px] font-mono font-bold tracking-wider text-zinc-500 block mb-1 uppercase">{t('inspector.field.sectionTitle')}</label>
+          <input
+            type="text"
+            value={data.title || ''}
+            onChange={(e) => handleDataChange('title', e.target.value)}
+            className="w-full bg-zinc-900 border border-white/10 rounded-lg text-xs px-3 py-2 text-white focus:outline-none"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label className="text-[10px] font-mono font-bold tracking-wider text-zinc-500 block mb-1 uppercase">{t('inspector.field.description')}</label>
+        <textarea
+          rows={3}
+          value={data.description || ''}
+          onChange={(e) => handleDataChange('description', e.target.value)}
+          className="w-full bg-zinc-900 border border-white/10 rounded-lg text-xs px-3 py-2 text-white focus:outline-none resize-none"
+          placeholder="Descripción opcional del flujo UX"
+        />
+      </div>
+
+      <ImageUploader
+        label="Imagen del Flujo UX"
+        value={data.image || ''}
+        onChange={(val) => handleDataChange('image', val)}
+        withOcr={true}
+        onOcrClick={() => setOcrOpen(true)}
+      />
+    </div>
+  )
+
   // Generic fallback editor
   const renderFallbackEditor = (data: any) => (
     <div className="space-y-4">
@@ -838,7 +1243,7 @@ export function SectionInspector() {
           className="w-full bg-zinc-900 border border-white/10 rounded-lg text-xs px-3 py-2 text-white focus:outline-none resize-none"
         />
       </div>
-      
+
       {data.image !== undefined && (
         <ImageUploader
           label={t('inspector.field.imageUrl')}
@@ -863,6 +1268,16 @@ export function SectionInspector() {
         return renderMockupsEditor(section.data)
       case 'footer':
         return renderFooterEditor(section.data)
+      case 'problem':
+        return renderProblemEditor(section.data)
+      case 'process':
+        return renderProcessEditor(section.data)
+      case 'typography':
+        return renderTypographyEditor(section.data)
+      case 'results':
+        return renderResultsEditor(section.data)
+      case 'ux-flow':
+        return renderUXFlowEditor(section.data)
       default:
         return renderFallbackEditor(section.data)
     }
@@ -920,18 +1335,15 @@ export function SectionInspector() {
           <div>
             <label className="text-[10px] font-mono font-bold tracking-wider text-zinc-500 block mb-1 uppercase">{t('inspector.style.displayFont')}</label>
             <CustomSelect
-              value={section.style.background ? 'default' : 'default'}
-              onChange={() => {
-                alert('La fuente display se configura a nivel de tema en esta versión de scaffolding.')
-              }}
+              value={section.style.displayFont || 'default'}
+              onChange={(val) => handleStyleChange('displayFont', val === 'default' ? undefined : val)}
               options={[
-                { value: 'default', label: `Heredar del Tema (${project.theme === 'dark-editorial' ? 'Montserrat' : project.theme === 'clean-light' ? 'Sora' : 'Inter'})` },
+                { value: 'default', label: 'Heredar del Tema' },
                 ...fontFamilies.map(f => ({ value: f, label: f }))
               ]}
               className="w-full"
               triggerClassName="w-full py-2 justify-between"
               dropdownClassName="w-full"
-              disabled={true}
             />
           </div>
         </div>
