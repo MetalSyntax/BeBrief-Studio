@@ -4,16 +4,13 @@ import './index.css'
 import './lib/i18n'
 import App from './App.tsx'
 import { ToastProvider } from './components/shared/ToastProvider'
-import { registerSW } from 'virtual:pwa-register'
-
-if (import.meta.env.PROD) {
-  registerSW({ immediate: true })
-}
+import { PWAUpdateBanner } from './components/shared/PWAUpdateBanner'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ToastProvider>
       <App />
+      <PWAUpdateBanner />
     </ToastProvider>
   </StrictMode>,
 )
