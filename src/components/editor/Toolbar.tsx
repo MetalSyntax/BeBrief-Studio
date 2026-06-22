@@ -1,8 +1,9 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useProjectStore } from '../../lib/store/projectStore'
 import type { ThemeId } from '../../lib/types/project.types'
 import { Undo2, Redo2, Eye, Download, Sparkles, Copy, Printer, Home, Menu, X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { CustomSelect } from '../ui/CustomSelect'
 
 interface Props {
   previewMode: boolean
@@ -18,15 +19,34 @@ export function Toolbar({ previewMode, setPreviewMode, onExportHTML, onCopyHTML,
   const [showExportMenu, setShowExportMenu] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
-  const handleThemeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setTheme(e.target.value as ThemeId)
-  }
-
-  const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    i18n.changeLanguage(e.target.value)
-  }
-
   const currentLang = i18n.language ? i18n.language.split('-')[0] : 'es'
+
+  const languageOptions = [
+    { value: 'es', label: 'ES' },
+    { value: 'en', label: 'EN' },
+    { value: 'pt', label: 'PT' },
+  ]
+
+  const themeGroups = [
+    {
+      label: t('themes.groupDark', { defaultValue: 'Temas Oscuros' }),
+      options: [
+        { value: 'dark-editorial', label: 'Dark Editorial' },
+        { value: 'minimal', label: 'Minimal' },
+        { value: 'neon-noir', label: 'Neon Noir' },
+        { value: 'ocean-tech', label: 'Ocean Tech' },
+        { value: 'rose-editorial', label: 'Rose Editorial' },
+        { value: 'forest-sage', label: 'Forest Sage' },
+      ]
+    },
+    {
+      label: t('themes.groupLight', { defaultValue: 'Temas Claros' }),
+      options: [
+        { value: 'clean-light', label: 'Clean Light' },
+        { value: 'warm-parchment', label: 'Warm Parchment' },
+      ]
+    }
+  ]
 
   return (
     <header className="h-16 border-b border-white/5 bg-[#13131a] px-6 flex items-center justify-between z-30 relative shrink-0">
@@ -61,41 +81,22 @@ export function Toolbar({ previewMode, setPreviewMode, onExportHTML, onCopyHTML,
       {/* Desktop Toolbar */}
       <div className="hidden md:flex items-center gap-4 lg:gap-6">
         {/* Language selector */}
-        <div className="flex items-center gap-1.5 bg-zinc-900 border border-white/10 rounded-lg px-2.5 py-1.5 text-xs font-semibold">
-          <span className="text-xs">🌐</span>
-          <select
-            value={currentLang}
-            onChange={handleLanguageChange}
-            className="bg-transparent text-white focus:outline-none cursor-pointer text-xs font-semibold"
-          >
-            <option value="es">ES</option>
-            <option value="en">EN</option>
-            <option value="pt">PT</option>
-          </select>
-        </div>
+        <CustomSelect
+          value={currentLang}
+          onChange={(val) => i18n.changeLanguage(val)}
+          options={languageOptions}
+          icon={<span>🌐</span>}
+        />
 
         {/* Themes selector */}
         <div className="flex items-center gap-2">
-          <Sparkles size={16} className="text-violet-400" />
           <span className="text-xs text-zinc-400 font-medium hidden sm:inline">{t('toolbar.theme')}:</span>
-          <select
+          <CustomSelect
             value={project.theme}
-            onChange={handleThemeChange}
-            className="bg-zinc-900 border border-white/10 rounded-lg text-xs px-3 py-1.5 font-medium text-white focus:outline-none focus:border-violet-500 transition-colors"
-          >
-            <optgroup label={t('themes.groupDark', { defaultValue: 'Temas Oscuros' })}>
-              <option value="dark-editorial">Dark Editorial</option>
-              <option value="minimal">Minimal</option>
-              <option value="neon-noir">Neon Noir</option>
-              <option value="ocean-tech">Ocean Tech</option>
-              <option value="rose-editorial">Rose Editorial</option>
-              <option value="forest-sage">Forest Sage</option>
-            </optgroup>
-            <optgroup label={t('themes.groupLight', { defaultValue: 'Temas Claros' })}>
-              <option value="clean-light">Clean Light</option>
-              <option value="warm-parchment">Warm Parchment</option>
-            </optgroup>
-          </select>
+            onChange={(val) => setTheme(val as ThemeId)}
+            groups={themeGroups}
+            icon={<Sparkles size={14} className="text-violet-400" />}
+          />
         </div>
 
         <div className="h-4 w-px bg-white/10" />
@@ -224,41 +225,24 @@ export function Toolbar({ previewMode, setPreviewMode, onExportHTML, onCopyHTML,
             {/* Theme & Language row */}
             <div className="flex items-center gap-3">
               {/* Language selector */}
-              <div className="flex items-center gap-1.5 bg-zinc-900 border border-white/10 rounded-lg px-2.5 py-2 text-xs font-semibold flex-1 justify-center">
-                <span className="text-xs">🌐</span>
-                <select
-                  value={currentLang}
-                  onChange={handleLanguageChange}
-                  className="bg-transparent text-white focus:outline-none cursor-pointer text-xs font-semibold"
-                >
-                  <option value="es">ES</option>
-                  <option value="en">EN</option>
-                  <option value="pt">PT</option>
-                </select>
-              </div>
+              <CustomSelect
+                value={currentLang}
+                onChange={(val) => i18n.changeLanguage(val)}
+                options={languageOptions}
+                icon={<span>🌐</span>}
+                className="flex-1"
+                triggerClassName="w-full justify-center"
+              />
 
               {/* Themes selector */}
-              <div className="flex items-center gap-2 bg-zinc-900 border border-white/10 rounded-lg px-3 py-2 flex-1 justify-center">
-                <Sparkles size={14} className="text-violet-400 shrink-0" />
-                <select
-                  value={project.theme}
-                  onChange={handleThemeChange}
-                  className="bg-transparent text-xs font-medium text-white focus:outline-none cursor-pointer w-full"
-                >
-                  <optgroup label={t('themes.groupDark', { defaultValue: 'Temas Oscuros' })}>
-                    <option value="dark-editorial">Dark Editorial</option>
-                    <option value="minimal">Minimal</option>
-                    <option value="neon-noir">Neon Noir</option>
-                    <option value="ocean-tech">Ocean Tech</option>
-                    <option value="rose-editorial">Rose Editorial</option>
-                    <option value="forest-sage">Forest Sage</option>
-                  </optgroup>
-                  <optgroup label={t('themes.groupLight', { defaultValue: 'Temas Claros' })}>
-                    <option value="clean-light">Clean Light</option>
-                    <option value="warm-parchment">Warm Parchment</option>
-                  </optgroup>
-                </select>
-              </div>
+              <CustomSelect
+                value={project.theme}
+                onChange={(val) => setTheme(val as ThemeId)}
+                groups={themeGroups}
+                icon={<Sparkles size={14} className="text-violet-400 shrink-0" />}
+                className="flex-1"
+                triggerClassName="w-full justify-center"
+              />
             </div>
 
             <div className="h-px bg-white/10 w-full" />

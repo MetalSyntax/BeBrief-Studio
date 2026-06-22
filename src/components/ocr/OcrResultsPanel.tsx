@@ -1,6 +1,7 @@
 import { Check, AlertCircle, RefreshCw } from 'lucide-react'
 import type { OcrBlock } from '../../lib/ocr/ocrEngine'
 import type { FieldMappingSuggestion } from '../../lib/ocr/textMapper'
+import { CustomSelect } from '../ui/CustomSelect'
 
 interface Props {
   blocks: OcrBlock[]
@@ -133,17 +134,16 @@ export function OcrResultsPanel({
 
                 <div className="flex items-center gap-2">
                   <span className="text-[10px] text-zinc-500 font-medium font-mono uppercase">Asignar a:</span>
-                  <select
+                  <CustomSelect
                     value={mapping}
-                    onChange={(e) => onMappingChange(index, e.target.value)}
-                    className="bg-zinc-950 border border-white/10 rounded-lg text-xs px-2.5 py-1 text-white focus:outline-none focus:border-violet-500 transition-colors"
-                  >
-                    {fields.map(f => (
-                      <option key={f.value} value={f.value}>
-                        {f.label} {suggestion?.suggestedField === f.value && mapping === 'none' ? ' (Sugerido)' : ''}
-                      </option>
-                    ))}
-                  </select>
+                    onChange={(val) => onMappingChange(index, val)}
+                    options={fields.map(f => ({
+                      value: f.value,
+                      label: `${f.label}${suggestion?.suggestedField === f.value && mapping === 'none' ? ' (Sugerido)' : ''}`
+                    }))}
+                    triggerClassName="bg-zinc-950/80 hover:bg-zinc-900 px-2 py-1 text-xs"
+                    dropdownClassName="right-0 left-auto"
+                  />
                 </div>
               </div>
 

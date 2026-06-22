@@ -4,6 +4,7 @@ import { Info, Trash2, Plus, Eye, EyeOff, ScanText } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { ImageUploader } from '../shared/ImageUploader'
 import { OcrModal } from '../ocr/OcrModal'
+import { CustomSelect } from '../ui/CustomSelect'
 
 type Tab = 'content' | 'style' | 'advanced'
 
@@ -68,27 +69,33 @@ export function SectionInspector() {
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="text-[10px] font-mono font-bold tracking-wider text-zinc-500 block mb-1 uppercase">{t('inspector.field.titleSize')}</label>
-          <select
+          <CustomSelect
             value={data.titleSize || 'xl'}
-            onChange={(e) => handleDataChange('titleSize', e.target.value)}
-            className="w-full bg-zinc-900 border border-white/10 rounded-lg text-xs px-3 py-2 text-white focus:outline-none"
-          >
-            <option value="xl">Estándar (xl)</option>
-            <option value="xxl">Grande (2xl)</option>
-            <option value="display">Gigante (Display)</option>
-          </select>
+            onChange={(val) => handleDataChange('titleSize', val)}
+            options={[
+              { value: 'xl', label: 'Estándar (xl)' },
+              { value: 'xxl', label: 'Grande (2xl)' },
+              { value: 'display', label: 'Gigante (Display)' }
+            ]}
+            className="w-full"
+            triggerClassName="w-full py-2 justify-between"
+            dropdownClassName="w-full"
+          />
         </div>
 
         <div>
           <label className="text-[10px] font-mono font-bold tracking-wider text-zinc-500 block mb-1 uppercase">{t('inspector.field.alignment')}</label>
-          <select
+          <CustomSelect
             value={data.layout || 'left'}
-            onChange={(e) => handleDataChange('layout', e.target.value)}
-            className="w-full bg-zinc-900 border border-white/10 rounded-lg text-xs px-3 py-2 text-white focus:outline-none"
-          >
-            <option value="left">{t('inspector.field.alignLeft')}</option>
-            <option value="centered">{t('inspector.field.alignCenter')}</option>
-          </select>
+            onChange={(val) => handleDataChange('layout', val)}
+            options={[
+              { value: 'left', label: t('inspector.field.alignLeft') },
+              { value: 'centered', label: t('inspector.field.alignCenter') }
+            ]}
+            className="w-full"
+            triggerClassName="w-full py-2 justify-between"
+            dropdownClassName="w-full"
+          />
         </div>
       </div>
 
@@ -251,14 +258,17 @@ export function SectionInspector() {
 
         <div>
           <label className="text-[10px] font-mono font-bold tracking-wider text-zinc-500 block mb-1 uppercase">{t('inspector.field.layout')}</label>
-          <select
+          <CustomSelect
             value={data.layout || 'grid'}
-            onChange={(e) => handleDataChange('layout', e.target.value)}
-            className="w-full bg-zinc-900 border border-white/10 rounded-lg text-xs px-3 py-2 text-white focus:outline-none"
-          >
-            <option value="grid">Grilla (Grid)</option>
-            <option value="horizontal-strip">Franja Horizontal</option>
-          </select>
+            onChange={(val) => handleDataChange('layout', val)}
+            options={[
+              { value: 'grid', label: 'Grilla (Grid)' },
+              { value: 'horizontal-strip', label: 'Franja Horizontal' }
+            ]}
+            className="w-full"
+            triggerClassName="w-full py-2 justify-between"
+            dropdownClassName="w-full"
+          />
         </div>
 
         <div>
@@ -378,16 +388,19 @@ export function SectionInspector() {
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="text-[10px] font-mono font-bold tracking-wider text-zinc-500 block mb-1 uppercase">{t('inspector.field.layout')}</label>
-            <select
+            <CustomSelect
               value={data.layout || 'grid-2'}
-              onChange={(e) => handleDataChange('layout', e.target.value)}
-              className="w-full bg-zinc-900 border border-white/10 rounded-lg text-xs px-3 py-2 text-white focus:outline-none"
-            >
-              <option value="grid-2">2 Columnas</option>
-              <option value="grid-3">3 Columnas</option>
-              <option value="centered-large">Centrado Grande</option>
-              <option value="scattered">Scattered (Disperso)</option>
-            </select>
+              onChange={(val) => handleDataChange('layout', val)}
+              options={[
+                { value: 'grid-2', label: '2 Columnas' },
+                { value: 'grid-3', label: '3 Columnas' },
+                { value: 'centered-large', label: 'Centrado Grande' },
+                { value: 'scattered', label: 'Scattered (Disperso)' }
+              ]}
+              className="w-full"
+              triggerClassName="w-full py-2 justify-between"
+              dropdownClassName="w-full"
+            />
           </div>
         </div>
 
@@ -429,16 +442,19 @@ export function SectionInspector() {
                     onChange={(e) => handleMockupChange(index, 'alt', e.target.value)}
                     className="bg-zinc-900 border border-white/10 rounded px-2 py-1 text-[11px] text-white"
                   />
-                  <select
+                  <CustomSelect
                     value={mock.deviceFrame || 'none'}
-                    onChange={(e) => handleMockupChange(index, 'deviceFrame', e.target.value)}
-                    className="bg-zinc-900 border border-white/10 rounded px-2 py-1 text-[11px] text-white"
-                  >
-                    <option value="none">Sin Frame</option>
-                    <option value="phone">Móvil (Phone)</option>
-                    <option value="tablet">Tablet</option>
-                    <option value="browser">Navegador</option>
-                  </select>
+                    onChange={(val) => handleMockupChange(index, 'deviceFrame', val)}
+                    options={[
+                      { value: 'none', label: 'Sin Frame' },
+                      { value: 'phone', label: 'Móvil (Phone)' },
+                      { value: 'tablet', label: 'Tablet' },
+                      { value: 'browser', label: 'Navegador' }
+                    ]}
+                    className="w-full"
+                    triggerClassName="w-full py-1 justify-between bg-zinc-900 text-[11px]"
+                    dropdownClassName="w-full"
+                  />
                 </div>
               </div>
             ))}
@@ -654,19 +670,20 @@ export function SectionInspector() {
           
           <div>
             <label className="text-[10px] font-mono font-bold tracking-wider text-zinc-500 block mb-1 uppercase">{t('inspector.style.displayFont')}</label>
-            <select
+            <CustomSelect
               value={section.style.background ? 'default' : 'default'}
               onChange={() => {
                 alert('La fuente display se configura a nivel de tema en esta versión de scaffolding.')
               }}
-              className="w-full bg-zinc-900 border border-white/10 rounded-lg text-xs px-3 py-2 text-white focus:outline-none"
-              disabled
-            >
-              <option value="default">Heredar del Tema ({project.theme === 'dark-editorial' ? 'Montserrat' : project.theme === 'clean-light' ? 'Sora' : 'Inter'})</option>
-              {fontFamilies.map(f => (
-                <option key={f} value={f}>{f}</option>
-              ))}
-            </select>
+              options={[
+                { value: 'default', label: `Heredar del Tema (${project.theme === 'dark-editorial' ? 'Montserrat' : project.theme === 'clean-light' ? 'Sora' : 'Inter'})` },
+                ...fontFamilies.map(f => ({ value: f, label: f }))
+              ]}
+              className="w-full"
+              triggerClassName="w-full py-2 justify-between"
+              dropdownClassName="w-full"
+              disabled={true}
+            />
           </div>
         </div>
 
@@ -677,20 +694,21 @@ export function SectionInspector() {
             {/* Gradient Preset Picker */}
             <div>
               <label className="text-[10px] font-mono font-bold tracking-wider text-zinc-500 block mb-1 uppercase">{t('inspector.style.gradientPresets')}</label>
-              <select
+              <CustomSelect
                 value={gradientPresets.find(p => p.value === section.style.background) ? section.style.background : 'custom'}
-                onChange={(e) => {
-                  if (e.target.value !== 'custom') {
-                    handleStyleChange('background', e.target.value)
+                onChange={(val) => {
+                  if (val !== 'custom') {
+                    handleStyleChange('background', val)
                   }
                 }}
-                className="w-full bg-zinc-900 border border-white/10 rounded-lg text-xs px-3 py-2 text-white focus:outline-none"
-              >
-                <option value="custom">Gradiente o color personalizado</option>
-                {gradientPresets.map(preset => (
-                  <option key={preset.name} value={preset.value}>{preset.name}</option>
-                ))}
-              </select>
+                options={[
+                  { value: 'custom', label: 'Gradiente o color personalizado' },
+                  ...gradientPresets.map(preset => ({ value: preset.value, label: preset.name }))
+                ]}
+                className="w-full"
+                triggerClassName="w-full py-2 justify-between"
+                dropdownClassName="w-full"
+              />
             </div>
 
             <div>
@@ -758,15 +776,18 @@ export function SectionInspector() {
 
           <div>
             <label className="text-[10px] font-mono font-bold tracking-wider text-zinc-500 block mb-1 uppercase">{t('inspector.field.sectionWidth')}</label>
-            <select
+            <CustomSelect
               value={section.style.width || '1600px'}
-              onChange={(e) => handleStyleChange('width', e.target.value)}
-              className="w-full bg-zinc-900 border border-white/10 rounded-lg text-xs px-3 py-2 text-white focus:outline-none"
-            >
-              <option value="1600px">1600px (Full bleed de Behance)</option>
-              <option value="1200px">1200px (Contenido Estándar)</option>
-              <option value="100%">100% (Fluido)</option>
-            </select>
+              onChange={(val) => handleStyleChange('width', val)}
+              options={[
+                { value: '1600px', label: '1600px (Full bleed de Behance)' },
+                { value: '1200px', label: '1200px (Contenido Estándar)' },
+                { value: '100%', label: '100% (Fluido)' }
+              ]}
+              className="w-full"
+              triggerClassName="w-full py-2 justify-between"
+              dropdownClassName="w-full"
+            />
           </div>
         </div>
       </div>

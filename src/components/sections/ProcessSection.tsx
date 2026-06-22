@@ -1,3 +1,4 @@
+import React, { useState } from 'react'
 import type { Section, ProcessData } from '../../lib/types/project.types'
 import { useProjectStore } from '../../lib/store/projectStore'
 import { EditableText } from '../ui/EditableText'
@@ -12,6 +13,7 @@ interface Props {
 export function ProcessSection({ section, isEditing, onClick }: Props) {
   const { data, style } = section
   const updateSection = useProjectStore((state) => state.updateSection)
+  const [activeIconPicker, setActiveIconPicker] = useState<number | null>(null)
 
   const handleUpdate = (key: keyof ProcessData, val: any) => {
     updateSection(section.id, { [key]: val })
@@ -24,26 +26,29 @@ export function ProcessSection({ section, isEditing, onClick }: Props) {
   }
 
   return (
-    <div
+    <section
       onClick={onClick}
       style={{
         background: style.background,
         color: style.textColor,
         padding: style.padding || '100px 80px',
-      }}
-      className={`w-full overflow-hidden transition-all duration-300 ${
-        isEditing ? 'ring-2 ring-violet-500 ring-offset-2' : ''
-      } cursor-pointer`}
+      } as React.CSSProperties}
+      className={`relative border-b border-white/5 transition-all duration-300 ${
+        isEditing ? 'ring-2 ring-violet-500/50' : ''
+      }`}
     >
-      <div className="max-w-[1120px] mx-auto w-full px-6">
-        <div className="flex items-center gap-3 mb-12">
+      <div 
+        style={{ maxWidth: style.width || '1600px' }}
+        className="mx-auto px-6 lg:px-16 py-12"
+      >
+        <div className="flex flex-col gap-2 mb-12">
           {data.sectionNumber && (
             <EditableText
               value={data.sectionNumber}
               onChange={(val) => handleUpdate('sectionNumber', val)}
               isEditing={isEditing}
               tagName="span"
-              className="font-mono text-sm opacity-60 bg-white/5 border border-white/10 px-2 py-0.5 rounded"
+              className="text-xs font-bold font-mono tracking-widest text-violet-400 uppercase"
             />
           )}
           
@@ -52,14 +57,13 @@ export function ProcessSection({ section, isEditing, onClick }: Props) {
             onChange={(val) => handleUpdate('title', val)}
             isEditing={isEditing}
             tagName="h2"
-            className="text-2xl font-bold tracking-tight uppercase"
+            className="text-4xl md:text-5xl font-bold tracking-tight"
             style={{ fontFamily: 'var(--font-display)' }}
           />
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {data.steps?.map((step: any, index: number) => {
-            // Dynamically resolve lucide icons
             const IconComponent = (LucideIcons as any)[step.icon] || LucideIcons.HelpCircle
             
             return (
@@ -68,26 +72,55 @@ export function ProcessSection({ section, isEditing, onClick }: Props) {
                   0{index + 1}
                 </div>
                 
-                <div className="w-12 h-12 rounded-xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center text-violet-400 mb-6 relative">
+                <div 
+                  className={`w-12 h-12 rounded-xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center text-violet-400 mb-6 relative ${
+                    isEditing ? 'cursor-pointer hover:bg-violet-500/20 hover:border-violet-500/30' : ''
+                  }`}
+                  onClick={(e) => {
+                    if (isEditing) {
+                      e.stopPropagation()
+                      setActiveIconPicker(activeIconPicker === index ? null : index)
+                    }
+                  }}
+                >
                   <IconComponent size={22} />
                   
-                  {isEditing && (
-                    <select
-                      value={step.icon || 'HelpCircle'}
-                      onChange={(e) => handleStepUpdate(index, 'icon', e.target.value)}
-                      className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
-                      title="Cambiar Icono"
-                    >
-                      <option value="Search">Search</option>
-                      <option value="Target">Target</option>
-                      <option value="Layers">Layers</option>
-                      <option value="Zap">Zap</option>
-                      <option value="Award">Award</option>
-                      <option value="Heart">Heart</option>
-                      <option value="Code">Code</option>
-                      <option value="Smile">Smile</option>
-                      <option value="HelpCircle">HelpCircle</option>
-                    </select>
+                  {isEditing && activeIconPicker === index && (
+                    <>
+                      <div className="fixed inset-0 z-40" onClick={(e) => {
+                        e.stopPropagation()
+                        setActiveIconPicker(null)
+                      }} />
+                      <div className="absolute top-14 left-0 bg-[#13131a] border border-white/10 rounded-xl shadow-2xl z-50 p-2 grid grid-cols-3 gap-1.5 w-36">
+                        {[
+                          { name: 'Search', icon: LucideIcons.Search },
+                          { name: 'Target', icon: LucideIcons.Target },
+                          { name: 'Layers', icon: LucideIcons.Layers },
+                          { name: 'Zap', icon: LucideIcons.Zap },
+                          { name: 'Award', icon: LucideIcons.Award },
+                          { name: 'Heart', icon: LucideIcons.Heart },
+                          { name: 'Code', icon: LucideIcons.Code },
+                          { name: 'Smile', icon: LucideIcons.Smile },
+                          { name: 'HelpCircle', icon: LucideIcons.HelpCircle }
+                        ].map(({ name, icon: PickerIcon }) => (
+                          <button
+                            key={name}
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              handleStepUpdate(index, 'icon', name)
+                              setActiveIconPicker(null)
+                            }}
+                            className={`p-2 rounded-lg hover:bg-white/5 flex items-center justify-center transition-all ${
+                              step.icon === name ? 'text-violet-400 bg-violet-500/10' : 'text-zinc-400'
+                            }`}
+                            title={name}
+                          >
+                            <PickerIcon size={16} />
+                          </button>
+                        ))}
+                      </div>
+                    </>
                   )}
                 </div>
                 
@@ -113,6 +146,6 @@ export function ProcessSection({ section, isEditing, onClick }: Props) {
           })}
         </div>
       </div>
-    </div>
+    </section>
   )
 }
