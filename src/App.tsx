@@ -10,8 +10,7 @@ import { save } from '@tauri-apps/plugin-dialog'
 import { writeTextFile } from '@tauri-apps/plugin-fs'
 
 function App() {
-  const [previewMode, setPreviewMode] = useState(false)
-  const { project, view } = useProjectStore()
+  const { project, view, previewMode } = useProjectStore()
 
   const [activeMobileTab, setActiveMobileTab] = useState<'canvas' | 'sections' | 'inspector'>('canvas')
 
@@ -61,56 +60,80 @@ function App() {
         URL.revokeObjectURL(url)
       }
     } catch (error) {
-      console.error('Error exporting HTML:', error)
-      alert('Hubo un error al exportar el archivo HTML.')
+      console.error('Error saving file:', error)
+      alert('Error al guardar el archivo de exportación')
     }
   }
+
   const handleCopyHTML = () => {
     try {
       const htmlContent = exportProjectToHTML(project)
       navigator.clipboard.writeText(htmlContent)
-      alert('¡Código HTML standalone copiado al portapapeles! Listo para subir a Behance o guardar.')
-    } catch (error) {
-      console.error('Error copying HTML:', error)
-      alert('Hubo un error al copiar el HTML.')
+      alert('¡Código HTML copiado al portapapeles!')
+    } catch (e) {
+      console.error('Copy to clipboard failed', e)
+      alert('No se pudo copiar el HTML. Intenta exportar el archivo.')
     }
   }
-  const handleExportImage = async (format: 'png' | 'webp') => {
-    const el = document.getElementById('brief-canvas-export')
-    if (!el) return
 
+  const handleExportImage = async (format: 'png' | 'webp') => {
     try {
-      const options = {
-        style: {
-          width: '1600px',
-          transform: 'none',
-          transformOrigin: 'top center',
-          margin: '0',
-          padding: '0'
-        },
-        width: 1600,
+      const canvasEl = document.getElementById('brief-render-canvas')
+      if (!canvasEl) return
+
+      // Dynamic import of html-to-image
+      const htmlToImage = await import('html-to-image') as any
+      
+      const filter = (node: HTMLElement) => {
+        const exclusionClasses = ['action-btn', 'add-section-btn']
+        return !exclusionClasses.some(cls => node.classList?.contains(cls))
       }
 
       let dataUrl = ''
-      const htmlToImage = await import('html-to-image') as any
-
       if (format === 'webp') {
-        dataUrl = await htmlToImage.toWebp(el, options)
+        dataUrl = await htmlToImage.toWebp(canvasEl, { quality: 0.95, filter })
       } else {
-        dataUrl = await htmlToImage.toPng(el, options)
+        dataUrl = await htmlToImage.toPng(canvasEl, { quality: 0.95, filter })
       }
 
-      const link = document.createElement('a')
-      link.href = dataUrl
       const safeTitle = project.title
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/(^-|-$)+/g, '') || 'case-study'
-      
-      link.setAttribute('download', `${safeTitle}-brief.${format}`)
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
+
+      const isTauri = typeof window !== 'undefined' && (window as any).__TAURI_INTERNALS__ !== undefined
+
+      if (isTauri) {
+        // Tauri file save
+        const filePath = await save({
+          filters: [{
+            name: `${format.toUpperCase()} Image`,
+            extensions: [format]
+          }],
+          defaultPath: `${safeTitle}-behance-brief.${format}`
+        })
+
+        if (filePath) {
+          // dataUrl is: data:image/png;base64,...
+          const base64Data = dataUrl.split(',')[1]
+          // Convert base64 to Uint8Array
+          const binaryString = atob(base64Data)
+          const len = binaryString.length
+          const bytes = new Uint8Array(len)
+          for (let i = 0; i < len; i++) {
+            bytes[i] = binaryString.charCodeAt(i)
+          }
+          await writeTextFile(filePath, new TextDecoder().decode(bytes))
+          alert('¡Imagen guardada con éxito!')
+        }
+      } else {
+        const link = document.createElement('a')
+        link.download = `${safeTitle}-behance-brief.${format}`
+        link.href = dataUrl
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+      }
     } catch (error) {
       console.error('Error exporting image:', error)
       alert('Hubo un error al exportar la imagen. Verifica que todas las imágenes del lienzo se hayan cargado correctamente.')
@@ -121,8 +144,6 @@ function App() {
     <div className="h-screen w-screen flex flex-col bg-[#0e0e11] text-zinc-100 overflow-hidden font-sans select-none">
       {/* Upper header */}
       <Toolbar 
-        previewMode={previewMode} 
-        setPreviewMode={setPreviewMode} 
         onExportHTML={handleExportHTML} 
         onCopyHTML={handleCopyHTML}
         onExportImage={handleExportImage}
@@ -139,7 +160,7 @@ function App() {
 
         {/* Center: Interactive editor canvas */}
         <div className={`flex-1 min-w-0 h-full ${previewMode || activeMobileTab === 'canvas' ? 'block' : 'hidden lg:block'}`}>
-          <EditorCanvas previewMode={previewMode} />
+          <EditorCanvas />
         </div>
 
         {/* Right Sidebar: Active properties panel (only in edit mode) */}

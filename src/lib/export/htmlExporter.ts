@@ -2,7 +2,21 @@ import type { Project } from '../types/project.types'
 import { themes } from '../themes'
 
 export function exportProjectToHTML(project: Project): string {
-  const activeTheme = themes[project.theme]
+  const activeTheme = project.theme === 'custom' 
+    ? (project.customTheme || {
+        '--bg': '#0f0f12',
+        '--bg-section': '#16161f',
+        '--bg-card': '#20202e',
+        '--text': '#ffffff',
+        '--text-muted': '#a1a1aa',
+        '--accent': '#8b5cf6',
+        '--border': 'rgba(255,255,255,0.08)',
+        '--font-display': "'Inter', sans-serif",
+        '--font-body': "'Inter', sans-serif",
+        '--radius': '12px',
+        '--section-w': '1600px',
+      }) 
+    : themes[project.theme as Exclude<typeof project.theme, 'custom'>]
   
   // Build variables string
   const cssVariables = Object.entries(activeTheme)

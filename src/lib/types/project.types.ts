@@ -7,6 +7,7 @@ export type ThemeId =
   | 'ocean-tech'
   | 'rose-editorial'
   | 'forest-sage'
+  | 'custom'
 
 export interface ThemeTokens {
   '--bg': string
@@ -31,6 +32,7 @@ export interface Project {
   sections: Section[]
   createdAt: string
   updatedAt: string
+  customTheme?: ThemeTokens
 }
 
 export type SectionType =

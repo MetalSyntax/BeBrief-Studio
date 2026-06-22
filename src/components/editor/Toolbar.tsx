@@ -6,15 +6,13 @@ import { useTranslation } from 'react-i18next'
 import { CustomSelect } from '../ui/CustomSelect'
 
 interface Props {
-  previewMode: boolean
-  setPreviewMode: (mode: boolean) => void
   onExportHTML: () => void
   onCopyHTML: () => void
   onExportImage: (format: 'png' | 'webp') => void
 }
 
-export function Toolbar({ previewMode, setPreviewMode, onExportHTML, onCopyHTML, onExportImage }: Props) {
-  const { project, past, future, setTheme, undo, redo, setView, updateProjectTitle } = useProjectStore()
+export function Toolbar({ onExportHTML, onCopyHTML, onExportImage }: Props) {
+  const { project, past, future, setTheme, undo, redo, setView, updateProjectTitle, previewMode, setPreviewMode } = useProjectStore()
   const { t, i18n } = useTranslation()
   const [showExportMenu, setShowExportMenu] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
@@ -44,6 +42,12 @@ export function Toolbar({ previewMode, setPreviewMode, onExportHTML, onCopyHTML,
       options: [
         { value: 'clean-light', label: 'Clean Light' },
         { value: 'warm-parchment', label: 'Warm Parchment' },
+      ]
+    },
+    {
+      label: 'Avanzado',
+      options: [
+        { value: 'custom', label: '🎨 Tema Personalizado' }
       ]
     }
   ]

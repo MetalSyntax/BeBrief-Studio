@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import type { Project, Section, ThemeId, SectionType } from '../types/project.types'
+import type { Project, Section, ThemeId, SectionType, ThemeTokens } from '../types/project.types'
 import { defaultSections } from '../templates/defaultSections'
 import { applyTheme } from '../themes'
 import i18n from '../i18n'
@@ -11,13 +11,16 @@ interface ProjectState {
   view: 'dashboard' | 'editor'
   past: Project[]
   future: Project[]
+  previewMode: boolean
   
   // Actions
   setView: (view: 'dashboard' | 'editor') => void
   setActiveSectionId: (id: string | null) => void
+  setPreviewMode: (mode: boolean) => void
   updateSection: (sectionId: string, dataPatch: any) => void
   updateSectionStyle: (sectionId: string, stylePatch: any) => void
   setTheme: (themeId: ThemeId) => void
+  updateCustomTheme: (tokensPatch: Partial<ThemeTokens>) => void
   reorderSections: (sections: Section[]) => void
   addSection: (type: SectionType) => void
   deleteSection: (sectionId: string) => void
@@ -68,7 +71,7 @@ const saveProjectsToLS = (projects: Project[]) => {
 
 const initialProjects = loadProjectsFromLS()
 const initialProject = initialProjects[0]
-setTimeout(() => applyTheme(initialProject.theme), 0)
+setTimeout(() => applyTheme(initialProject.theme, initialProject.customTheme), 0)
 
 export const useProjectStore = create<ProjectState>((set, get) => {
   const saveToHistory = (currentProject: Project) => {
@@ -95,9 +98,11 @@ export const useProjectStore = create<ProjectState>((set, get) => {
     view: 'dashboard',
     past: [],
     future: [],
+    previewMode: false,
 
     setView: (view) => set({ view }),
     setActiveSectionId: (id) => set({ activeSectionId: id }),
+    setPreviewMode: (mode) => set({ previewMode: mode }),
 
     updateSection: (sectionId, dataPatch) => {
       const { project } = get()
@@ -157,7 +162,7 @@ export const useProjectStore = create<ProjectState>((set, get) => {
       const { project } = get()
       const historyUpdate = saveToHistory(project)
       
-      applyTheme(themeId)
+      applyTheme(themeId, project.customTheme)
 
       const newProject = {
         ...project,
@@ -165,6 +170,46 @@ export const useProjectStore = create<ProjectState>((set, get) => {
         updatedAt: new Date().toISOString(),
       }
 
+      set({
+        project: newProject,
+        ...historyUpdate,
+        ...syncProjectsList(newProject),
+      })
+    },
+
+    updateCustomTheme: (tokensPatch) => {
+      const { project } = get()
+      const historyUpdate = saveToHistory(project)
+      
+      const currentCustom = project.customTheme || {
+        '--bg': '#0f0f12',
+        '--bg-section': '#16161f',
+        '--bg-card': '#20202e',
+        '--text': '#ffffff',
+        '--text-muted': '#a1a1aa',
+        '--accent': '#8b5cf6',
+        '--border': 'rgba(255,255,255,0.08)',
+        '--font-display': "'Inter', sans-serif",
+        '--font-body': "'Inter', sans-serif",
+        '--radius': '12px',
+        '--section-w': '1600px',
+      }
+      
+      const newCustomTheme = {
+        ...currentCustom,
+        ...tokensPatch
+      }
+      
+      const newProject = {
+        ...project,
+        customTheme: newCustomTheme,
+        updatedAt: new Date().toISOString(),
+      }
+      
+      if (project.theme === 'custom') {
+        applyTheme('custom', newCustomTheme)
+      }
+      
       set({
         project: newProject,
         ...historyUpdate,
@@ -387,7 +432,7 @@ export const useProjectStore = create<ProjectState>((set, get) => {
       const newPast = past.slice(0, past.length - 1)
       const newFuture = [JSON.parse(JSON.stringify(project)), ...future]
 
-      applyTheme(prevProject.theme)
+      applyTheme(prevProject.theme, prevProject.customTheme)
 
       set({
         project: prevProject,
@@ -405,7 +450,7 @@ export const useProjectStore = create<ProjectState>((set, get) => {
       const newFuture = future.slice(1)
       const newPast = [...past, JSON.parse(JSON.stringify(project))]
 
-      applyTheme(nextProject.theme)
+      applyTheme(nextProject.theme, nextProject.customTheme)
 
       set({
         project: nextProject,
@@ -430,7 +475,7 @@ export const useProjectStore = create<ProjectState>((set, get) => {
       const newProjects = [...projects, newProj]
       saveProjectsToLS(newProjects)
 
-      applyTheme(newProj.theme)
+      applyTheme(newProj.theme, newProj.customTheme)
 
       set({
         projects: newProjects,
@@ -456,7 +501,7 @@ export const useProjectStore = create<ProjectState>((set, get) => {
       let nextProject = project
       if (project.id === id) {
         nextProject = newProjects[0]
-        applyTheme(nextProject.theme)
+        applyTheme(nextProject.theme, nextProject.customTheme)
       }
 
       set({
@@ -492,7 +537,7 @@ export const useProjectStore = create<ProjectState>((set, get) => {
       const target = projects.find((p) => p.id === id)
       if (!target) return
 
-      applyTheme(target.theme)
+      applyTheme(target.theme, target.customTheme)
 
       set({
         project: target,

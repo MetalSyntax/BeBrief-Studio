@@ -4,12 +4,8 @@ import { SectionRenderer } from '../sections'
 import { ZoomIn, ZoomOut } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
-interface Props {
-  previewMode: boolean
-}
-
-export function EditorCanvas({ previewMode }: Props) {
-  const { project, activeSectionId, setActiveSectionId } = useProjectStore()
+export function EditorCanvas() {
+  const { project, activeSectionId, setActiveSectionId, previewMode } = useProjectStore()
   const { t } = useTranslation()
   const containerRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLDivElement>(null)

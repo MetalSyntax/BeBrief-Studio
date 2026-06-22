@@ -119,7 +119,21 @@ export const forestSage: ThemeTokens = {
   '--section-w': '1600px',
 }
 
-export const themes: Record<ThemeId, ThemeTokens> = {
+export const defaultCustomTheme: ThemeTokens = {
+  '--bg': '#0f0f12',
+  '--bg-section': '#16161f',
+  '--bg-card': '#20202e',
+  '--text': '#ffffff',
+  '--text-muted': '#a1a1aa',
+  '--accent': '#8b5cf6',
+  '--border': 'rgba(255,255,255,0.08)',
+  '--font-display': "'Inter', sans-serif",
+  '--font-body': "'Inter', sans-serif",
+  '--radius': '12px',
+  '--section-w': '1600px',
+}
+
+export const themes: Record<Exclude<ThemeId, 'custom'>, ThemeTokens> = {
   'dark-editorial': darkEditorial,
   'clean-light': cleanLight,
   'minimal': minimal,
@@ -130,8 +144,12 @@ export const themes: Record<ThemeId, ThemeTokens> = {
   'forest-sage': forestSage,
 }
 
-export function applyTheme(themeId: ThemeId) {
-  const theme = themes[themeId]
+export function applyTheme(themeId: ThemeId, customTheme?: ThemeTokens) {
+  const theme = themeId === 'custom' 
+    ? (customTheme || defaultCustomTheme) 
+    : themes[themeId as Exclude<ThemeId, 'custom'>]
+  if (!theme) return
+  
   const root = document.documentElement
   Object.entries(theme).forEach(([key, value]) => {
     if (value) {

@@ -9,18 +9,267 @@ import { CustomSelect } from '../ui/CustomSelect'
 type Tab = 'content' | 'style' | 'advanced'
 
 export function SectionInspector() {
-  const { activeSectionId, project, updateSection, updateSectionStyle, deleteSection, toggleSectionVisibility } = useProjectStore()
+  const { 
+    activeSectionId, 
+    project, 
+    updateSection, 
+    updateSectionStyle, 
+    deleteSection, 
+    toggleSectionVisibility,
+    setTheme,
+    updateCustomTheme
+  } = useProjectStore()
   const [activeTab, setActiveTab] = useState<Tab>('content')
   const [ocrOpen, setOcrOpen] = useState(false)
   const { t } = useTranslation()
 
   const section = project.sections.find((s) => s.id === activeSectionId)
 
+  const customTheme = project.customTheme || {
+    '--bg': '#0f0f12',
+    '--bg-section': '#16161f',
+    '--bg-card': '#20202e',
+    '--text': '#ffffff',
+    '--text-muted': '#a1a1aa',
+    '--accent': '#8b5cf6',
+    '--border': 'rgba(255,255,255,0.08)',
+    '--font-display': "'Inter', sans-serif",
+    '--font-body': "'Inter', sans-serif",
+    '--radius': '12px',
+    '--section-w': '1600px',
+  }
+
+  const handleCustomThemeUpdate = (key: string, val: string) => {
+    updateCustomTheme({ [key]: val })
+  }
+
   if (!section) {
     return (
-      <aside className="w-80 bg-[#13131a] border-l border-white/5 flex flex-col items-center justify-center p-6 text-center text-zinc-500 shrink-0">
-        <Info size={24} className="mb-2 text-zinc-600" />
-        <p className="text-xs">{t('inspector.empty')}</p>
+      <aside className="w-80 bg-[#13131a] border-l border-white/5 flex flex-col h-full overflow-y-auto shrink-0 scrollbar-thin scrollbar-thumb-white/10">
+        <div className="p-4 border-b border-white/5 flex items-center justify-between">
+          <span className="text-xs font-mono font-bold tracking-wider text-zinc-400 uppercase">
+            Ajustes Globales
+          </span>
+        </div>
+
+        <div className="p-4 space-y-6">
+          {/* Active Theme selector */}
+          <div className="space-y-2">
+            <label className="text-[10px] font-mono font-bold tracking-wider text-zinc-500 block uppercase">
+              Tema Activo
+            </label>
+            <CustomSelect
+              value={project.theme}
+              onChange={(val) => setTheme(val as any)}
+              groups={[
+                {
+                  label: 'Temas Predeterminados',
+                  options: [
+                    { value: 'dark-editorial', label: 'Dark Editorial' },
+                    { value: 'clean-light', label: 'Clean Light' },
+                    { value: 'minimal', label: 'Minimal' },
+                    { value: 'neon-noir', label: 'Neon Noir' },
+                    { value: 'ocean-tech', label: 'Ocean Tech' },
+                    { value: 'rose-editorial', label: 'Rose Editorial' },
+                    { value: 'forest-sage', label: 'Forest Sage' },
+                  ]
+                },
+                {
+                  label: 'Avanzado',
+                  options: [
+                    { value: 'custom', label: '🎨 Tema Personalizado' }
+                  ]
+                }
+              ]}
+              className="w-full"
+              triggerClassName="w-full py-2 justify-between bg-zinc-900 border border-white/10 text-xs"
+              dropdownClassName="w-full"
+            />
+          </div>
+
+          {project.theme === 'custom' ? (
+            <div className="space-y-4 pt-2 border-t border-white/5">
+              <span className="text-xs text-white font-semibold block">Diseñador de Tema</span>
+
+              {/* Colors section */}
+              <div className="space-y-3">
+                <span className="text-[10px] text-zinc-500 font-mono font-bold tracking-wider uppercase block">Colores del Lienzo</span>
+                
+                {/* Background color */}
+                <div className="space-y-1">
+                  <label className="text-[10px] text-zinc-400 block">Fondo del Lienzo (--bg)</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="color"
+                      value={customTheme['--bg']?.startsWith('#') ? customTheme['--bg'] : '#0f0f12'}
+                      onChange={(e) => handleCustomThemeUpdate('--bg', e.target.value)}
+                      className="w-8 h-8 rounded border border-white/15 bg-transparent p-0 cursor-pointer"
+                    />
+                    <input
+                      type="text"
+                      value={customTheme['--bg'] || ''}
+                      onChange={(e) => handleCustomThemeUpdate('--bg', e.target.value)}
+                      className="flex-1 bg-zinc-900 border border-white/10 rounded-lg text-xs px-3 py-1.5 text-white font-mono focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                {/* Section Background color */}
+                <div className="space-y-1">
+                  <label className="text-[10px] text-zinc-400 block">Fondo de Secciones (--bg-section)</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="color"
+                      value={customTheme['--bg-section']?.startsWith('#') ? customTheme['--bg-section'] : '#16161f'}
+                      onChange={(e) => handleCustomThemeUpdate('--bg-section', e.target.value)}
+                      className="w-8 h-8 rounded border border-white/15 bg-transparent p-0 cursor-pointer"
+                    />
+                    <input
+                      type="text"
+                      value={customTheme['--bg-section'] || ''}
+                      onChange={(e) => handleCustomThemeUpdate('--bg-section', e.target.value)}
+                      className="flex-1 bg-zinc-900 border border-white/10 rounded-lg text-xs px-3 py-1.5 text-white font-mono focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                {/* Card Background color */}
+                <div className="space-y-1">
+                  <label className="text-[10px] text-zinc-400 block">Fondo de Tarjetas/Gaps (--bg-card)</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="color"
+                      value={customTheme['--bg-card']?.startsWith('#') ? customTheme['--bg-card'] : '#20202e'}
+                      onChange={(e) => handleCustomThemeUpdate('--bg-card', e.target.value)}
+                      className="w-8 h-8 rounded border border-white/15 bg-transparent p-0 cursor-pointer"
+                    />
+                    <input
+                      type="text"
+                      value={customTheme['--bg-card'] || ''}
+                      onChange={(e) => handleCustomThemeUpdate('--bg-card', e.target.value)}
+                      className="flex-1 bg-zinc-900 border border-white/10 rounded-lg text-xs px-3 py-1.5 text-white font-mono focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                {/* Primary Text color */}
+                <div className="space-y-1">
+                  <label className="text-[10px] text-zinc-400 block">Texto Principal (--text)</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="color"
+                      value={customTheme['--text']?.startsWith('#') ? customTheme['--text'] : '#ffffff'}
+                      onChange={(e) => handleCustomThemeUpdate('--text', e.target.value)}
+                      className="w-8 h-8 rounded border border-white/15 bg-transparent p-0 cursor-pointer"
+                    />
+                    <input
+                      type="text"
+                      value={customTheme['--text'] || ''}
+                      onChange={(e) => handleCustomThemeUpdate('--text', e.target.value)}
+                      className="flex-1 bg-zinc-900 border border-white/10 rounded-lg text-xs px-3 py-1.5 text-white font-mono focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                {/* Accent color */}
+                <div className="space-y-1">
+                  <label className="text-[10px] text-zinc-400 block">Color de Acento (--accent)</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="color"
+                      value={customTheme['--accent']?.startsWith('#') ? customTheme['--accent'] : '#8b5cf6'}
+                      onChange={(e) => handleCustomThemeUpdate('--accent', e.target.value)}
+                      className="w-8 h-8 rounded border border-white/15 bg-transparent p-0 cursor-pointer"
+                    />
+                    <input
+                      type="text"
+                      value={customTheme['--accent'] || ''}
+                      onChange={(e) => handleCustomThemeUpdate('--accent', e.target.value)}
+                      className="flex-1 bg-zinc-900 border border-white/10 rounded-lg text-xs px-3 py-1.5 text-white font-mono focus:outline-none"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Typography & Layout */}
+              <div className="space-y-3 pt-2 border-t border-white/5">
+                <span className="text-[10px] text-zinc-500 font-mono font-bold tracking-wider uppercase block">Tipografía y Diseño</span>
+
+                {/* Display Font */}
+                <div className="space-y-1">
+                  <label className="text-[10px] text-zinc-400 block">Fuente Títulos (--font-display)</label>
+                  <CustomSelect
+                    value={customTheme['--font-display']}
+                    onChange={(val) => handleCustomThemeUpdate('--font-display', val)}
+                    options={[
+                      { value: "'Montserrat', sans-serif", label: 'Montserrat' },
+                      { value: "'Sora', sans-serif", label: 'Sora' },
+                      { value: "'Inter', sans-serif", label: 'Inter' },
+                      { value: "'Space Grotesk', sans-serif", label: 'Space Grotesk' },
+                      { value: "'Playfair Display', serif", label: 'Playfair Display' },
+                      { value: "'Manrope', sans-serif", label: 'Manrope' },
+                      { value: "'DM Sans', sans-serif", label: 'DM Sans' }
+                    ]}
+                    className="w-full"
+                    triggerClassName="w-full py-1.5 justify-between bg-zinc-900 text-xs"
+                    dropdownClassName="w-full"
+                  />
+                </div>
+
+                {/* Body Font */}
+                <div className="space-y-1">
+                  <label className="text-[10px] text-zinc-400 block">Fuente Párrafos (--font-body)</label>
+                  <CustomSelect
+                    value={customTheme['--font-body']}
+                    onChange={(val) => handleCustomThemeUpdate('--font-body', val)}
+                    options={[
+                      { value: "'Montserrat', sans-serif", label: 'Montserrat' },
+                      { value: "'Sora', sans-serif", label: 'Sora' },
+                      { value: "'Inter', sans-serif", label: 'Inter' },
+                      { value: "'Space Grotesk', sans-serif", label: 'Space Grotesk' },
+                      { value: "'Playfair Display', serif", label: 'Playfair Display' },
+                      { value: "'Manrope', sans-serif", label: 'Manrope' },
+                      { value: "'DM Sans', sans-serif", label: 'DM Sans' }
+                    ]}
+                    className="w-full"
+                    triggerClassName="w-full py-1.5 justify-between bg-zinc-900 text-xs"
+                    dropdownClassName="w-full"
+                  />
+                </div>
+
+                {/* Border radius */}
+                <div className="space-y-1">
+                  <label className="text-[10px] text-zinc-400 block">Redondeado (--radius)</label>
+                  <CustomSelect
+                    value={customTheme['--radius']}
+                    onChange={(val) => handleCustomThemeUpdate('--radius', val)}
+                    options={[
+                      { value: '0px', label: '0px (Recto)' },
+                      { value: '4px', label: '4px (Suave)' },
+                      { value: '8px', label: '8px (Regular)' },
+                      { value: '12px', label: '12px (Redondeado)' },
+                      { value: '16px', label: '16px (Grande)' },
+                      { value: '24px', label: '24px (Píldora)' }
+                    ]}
+                    className="w-full"
+                    triggerClassName="w-full py-1.5 justify-between bg-zinc-900 text-xs"
+                    dropdownClassName="w-full"
+                  />
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="p-4 bg-white/[0.02] border border-white/5 rounded-xl text-center text-zinc-500 space-y-2">
+              <Info size={20} className="mx-auto text-zinc-600" />
+              <p className="text-xs">
+                Selecciona una sección en el lienzo para ver y editar sus propiedades.
+              </p>
+              <p className="text-[10px] opacity-70">
+                O selecciona "Tema Personalizado" arriba para abrir el diseñador de temas interactivo.
+              </p>
+            </div>
+          )}
+        </div>
       </aside>
     )
   }

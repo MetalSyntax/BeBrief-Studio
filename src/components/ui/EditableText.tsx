@@ -1,23 +1,21 @@
 import { useRef, useEffect } from 'react'
+import { useProjectStore } from '../../lib/store/projectStore'
 
 interface EditableTextProps {
   value: string
   onChange: (value: string) => void
-  isEditing: boolean
+  isEditing?: boolean
   className?: string
   tagName?: 'h1' | 'h2' | 'h3' | 'p' | 'span' | 'div'
   style?: React.CSSProperties
 }
 
-export function EditableText({
-  value,
-  onChange,
-  isEditing,
-  className = '',
-  tagName = 'span',
-  style
-}: EditableTextProps) {
+export function EditableText(props: EditableTextProps) {
+  const { value, onChange, className = '', tagName = 'span', style } = props
   const ref = useRef<HTMLElement>(null)
+  const { previewMode } = useProjectStore()
+
+  const isEditable = !previewMode
 
   // Sync internal ref text only when value changes externally (e.g. undo/redo/theme)
   useEffect(() => {
@@ -47,12 +45,12 @@ export function EditableText({
   return (
     <Tag
       ref={ref}
-      contentEditable={isEditing}
+      contentEditable={isEditable}
       suppressContentEditableWarning
       onBlur={handleBlur}
       onKeyDown={handleKeyDown}
       className={`${className} ${
-        isEditing 
+        isEditable 
           ? 'focus:outline-violet-500 focus:bg-white/5 transition-all p-1 -m-1 rounded cursor-text select-text' 
           : ''
       }`}
