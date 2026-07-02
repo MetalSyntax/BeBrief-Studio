@@ -2,6 +2,7 @@ import { useRef, useState } from 'react'
 import { useProjectStore } from '../../lib/store/projectStore'
 import { downloadProjectJSON, parseProjectFromJSON } from '../../lib/export/jsonPortability'
 import { useToast } from '../shared/ToastProvider'
+import { LegalModal } from '../shared/LegalModal'
 import { Plus, Copy, Trash2, ArrowRight, Sparkles, LayoutGrid, Calendar, Download, Upload } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
@@ -10,6 +11,7 @@ export function Dashboard() {
   const { projects, createNewProject, deleteProject, duplicateProject, selectProject, importProject } = useProjectStore()
   const toast = useToast()
   const importInputRef = useRef<HTMLInputElement>(null)
+  const [legalTab, setLegalTab] = useState<'privacy' | 'terms' | null>(null)
 
   const handleDeleteProject = (id: string) => {
     if (projects.length <= 1) {
@@ -286,7 +288,24 @@ export function Dashboard() {
         <p className="opacity-80">
           Creado por <a href="https://metalsyntax.vercel.app/" target="_blank" rel="noopener noreferrer" className="text-violet-400 hover:text-violet-300 underline underline-offset-2 transition-all">metalsyntax</a>
         </p>
+        <p className="flex items-center gap-3 opacity-70">
+          <button
+            onClick={() => setLegalTab('privacy')}
+            className="hover:text-zinc-300 underline underline-offset-2 transition-colors cursor-pointer"
+          >
+            {t('legal.privacyLink')}
+          </button>
+          <span className="opacity-40">·</span>
+          <button
+            onClick={() => setLegalTab('terms')}
+            className="hover:text-zinc-300 underline underline-offset-2 transition-colors cursor-pointer"
+          >
+            {t('legal.termsLink')}
+          </button>
+        </p>
       </footer>
+
+      {legalTab && <LegalModal initialTab={legalTab} onClose={() => setLegalTab(null)} />}
     </div>
   )
 }

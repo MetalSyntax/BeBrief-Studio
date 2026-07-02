@@ -90,6 +90,11 @@ export async function detectColorsFromImage(
         const imgData = ctx.getImageData(0, 0, w, h).data
         const colorCounts: { r: number; g: number; b: number; count: number }[] = []
 
+        // Quantization helper to collapse image noise/gradients into flat, pure colors
+        const quantize = (val: number, step = 24) => {
+          return Math.round(val / step) * step
+        }
+
         // Extract and cluster colors
         for (let i = 0; i < imgData.length; i += 4 * sampleStep) {
           const r = imgData[i]
@@ -100,17 +105,21 @@ export async function detectColorsFromImage(
           // Ignore transparent/almost transparent pixels
           if (a < 150) continue
 
-          const currentColor = { r, g, b }
+          const qr = quantize(r)
+          const qg = quantize(g)
+          const qb = quantize(b)
+
+          const currentColor = { r: qr, g: qg, b: qb }
           let foundGroup = false
 
-          // Match color with existing clusters using a distance threshold of 45
+          // Match color with existing clusters using a threshold of 60 to merge similar gradient shades
           for (const group of colorCounts) {
-            if (colorDistance(group, currentColor) < 45) {
+            if (colorDistance(group, currentColor) < 60) {
               // Merge color to refine cluster center
               const weight = group.count / (group.count + 1)
-              group.r = group.r * weight + r * (1 - weight)
-              group.g = group.g * weight + g * (1 - weight)
-              group.b = group.b * weight + b * (1 - weight)
+              group.r = group.r * weight + qr * (1 - weight)
+              group.g = group.g * weight + qg * (1 - weight)
+              group.b = group.b * weight + qb * (1 - weight)
               group.count++
               foundGroup = true
               break
@@ -118,7 +127,7 @@ export async function detectColorsFromImage(
           }
 
           if (!foundGroup) {
-            colorCounts.push({ r, g, b, count: 1 })
+            colorCounts.push({ r: qr, g: qg, b: qb, count: 1 })
           }
         }
 

@@ -191,5 +191,89 @@
     "updateAvailable": "Nova versão disponível",
     "update": "Atualizar",
     "dismiss": "Fechar notificação"
+  },
+  "legal": {
+    "privacyLink": "Política de Privacidade",
+    "termsLink": "Termos e Condições",
+    "close": "Fechar",
+    "lastUpdated": "Última atualização: julho de 2026",
+    "privacy": {
+      "title": "Política de Privacidade",
+      "sections": [
+        {
+          "heading": "Resumo",
+          "body": "O BeBrief Studio funciona inteiramente no seu navegador (ou como app de desktop). Não existe conta de usuário nem servidor nosso que armazene seus projetos: todo o seu conteúdo (textos, imagens, temas) é salvo localmente no seu dispositivo, no armazenamento do navegador."
+        },
+        {
+          "heading": "O que é armazenado e onde",
+          "body": "Cada projeto é salvo no localStorage do seu navegador, incluindo as imagens que você enviar (convertidas em base64). Na versão desktop, é salvo no sistema de arquivos local do seu computador. Nada disso é enviado a servidores nossos, porque não os temos."
+        },
+        {
+          "heading": "Serviços de terceiros conectados pelo seu navegador",
+          "body": "Durante a edição, o app carrega fontes do Google Fonts (fonts.googleapis.com / fonts.gstatic.com). Se você usar a função de OCR, o Tesseract.js baixa arquivos de idioma de raw.githubusercontent.com (projeto naptha/tessdata) na primeira vez que é usado. Essas conexões ocorrem diretamente entre seu navegador e esses serviços; não passam pela nossa infraestrutura nem são registradas por nós."
+        },
+        {
+          "heading": "Análise e rastreamento",
+          "body": "Atualmente não utilizamos ferramentas de análise, cookies de rastreamento nem pixels de terceiros. Caso uma análise de produto seja adicionada no futuro (por exemplo, para entender quais seções ou temas são mais usados), ela será anônima, sem dados do seu brief, e será anunciada antes de ser ativada."
+        },
+        {
+          "heading": "Suas exportações (HTML, JSON, PNG)",
+          "body": "Os arquivos que você exporta são gerados e baixados diretamente no seu dispositivo. Não recebemos cópia deles. Você é responsável por onde os publica, envia ou compartilha (Behance, seu próprio site, um cliente, etc.)."
+        },
+        {
+          "heading": "Privacidade de menores",
+          "body": "O BeBrief Studio não é direcionado a menores de 13 anos e não coletamos deliberadamente informações de menores, já que não coletamos informações pessoais de nenhum usuário."
+        },
+        {
+          "heading": "Alterações nesta política",
+          "body": "Alterações materiais nesta política serão refletidas no histórico de mudanças do projeto (CHANGELOG.md) e, quando aplicável, com um aviso dentro do app."
+        },
+        {
+          "heading": "Contato",
+          "body": "Para dúvidas sobre esta política, entre em contato pelo canal indicado no site do autor, disponível no rodapé do Dashboard."
+        }
+      ]
+    },
+    "terms": {
+      "title": "Termos e Condições",
+      "sections": [
+        {
+          "heading": "Aceitação dos termos",
+          "body": "Ao usar o BeBrief Studio, você aceita estes termos. Se não concordar, não utilize o aplicativo."
+        },
+        {
+          "heading": "Descrição do serviço",
+          "body": "O BeBrief Studio é uma ferramenta de edição para criar case studies de design, fornecida \"como está\" e \"conforme disponibilidade\", sem garantia de funcionamento ininterrupto ou livre de erros."
+        },
+        {
+          "heading": "Titularidade do seu conteúdo",
+          "body": "Todo o conteúdo que você inserir (textos, imagens, nomes, links) é seu. Não reivindicamos nenhum direito sobre ele nem o usamos para outra finalidade além de exibi-lo dentro do seu próprio projeto no seu próprio dispositivo."
+        },
+        {
+          "heading": "Uso aceitável",
+          "body": "Não use o app para criar ou distribuir conteúdo ilegal, nem tente comprometer sua segurança ou funcionamento normal."
+        },
+        {
+          "heading": "Software e bibliotecas de terceiros",
+          "body": "O app utiliza bibliotecas de código aberto (entre outras: Google Fonts, Lucide Icons e Tesseract.js) sob suas próprias licenças. Seu uso dentro do BeBrief Studio não altera essas licenças."
+        },
+        {
+          "heading": "Ausência de garantia e limitação de responsabilidade",
+          "body": "O serviço é oferecido sem garantias de qualquer tipo. Como o armazenamento é local, não somos responsáveis por perda de projetos devido à limpeza de cache do navegador, troca de dispositivo ou desinstalação. Recomendamos exportar backups .bbs.json periodicamente."
+        },
+        {
+          "heading": "Disponibilidade do serviço",
+          "body": "O desenvolvimento do app pode ser modificado, pausado ou descontinuado em qualquer momento, por se tratar de um projeto em evolução contínua."
+        },
+        {
+          "heading": "Rescisão",
+          "body": "Você pode deixar de usar o app a qualquer momento simplesmente fechando-o ou excluindo seus dados locais; não há conta para cancelar."
+        },
+        {
+          "heading": "Alterações nestes termos",
+          "body": "Alterações materiais nestes termos serão refletidas no histórico de mudanças do projeto (CHANGELOG.md)."
+        }
+      ]
+    }
   }
 }
