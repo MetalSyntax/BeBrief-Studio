@@ -24,7 +24,18 @@
     "mockups": "Mockups",
     "ux-flow": "UX Flow",
     "results": "Results / KPIs",
-    "footer": "Footer"
+    "footer": "Footer",
+    "testimonial": "Testimonial",
+    "team": "Team",
+    "awards": "Awards",
+    "tech-stack": "Tech Stack",
+    "timeline": "Timeline"
+  },
+  "common": {
+    "addMember": "Add Member",
+    "addAward": "Add Award",
+    "addItem": "Add Tool",
+    "addMilestone": "Add Milestone"
   },
   "inspector": {
     "tabs": {
@@ -57,7 +68,13 @@
       "year": "Year",
       "socialLinks": "Social Links",
       "paddings": "Padding (Vertical Fill)",
-      "sectionWidth": "Section Width"
+      "sectionWidth": "Section Width",
+      "quote": "Quote / Testimonial",
+      "authorPhoto": "Author Photo",
+      "teamMembers": "Team Members",
+      "awardsList": "Awards & Recognition",
+      "techItems": "Tools / Technologies",
+      "milestones": "Milestones"
     },
     "style": {
       "inheritTheme": "Inherit from Theme",
@@ -90,7 +107,16 @@
   },
   "dashboard": {
     "savedProjects": "Saved Projects",
-    "createCatchy": "Create case studies that captivate",
+    "heroEyebrow": "Case Study Editor for Behance",
+    "createCatchyPrefix": "Create case studies that",
+    "createCatchyHighlight": "captivate",
+    "statSections": "section types",
+    "statThemes": "themes",
+    "statProjects": "saved projects",
+    "footerTagline": "A modular case study editor for Behance — 100% local, no accounts, no servers.",
+    "footerLegalGroup": "Legal",
+    "footerCreatorGroup": "Made by",
+    "footerCopyright": "Modular editing and standalone export.",
     "subtitle": "Design the structure of your Behance case study modularly. Customize colors, fonts, and content, and export to standalone HTML or PDF.",
     "createFromTemplate": "Create from Template",
     "myStudies": "My Case Studies ({{count}})",
@@ -172,6 +198,37 @@
     "footer": {
       "authorName": "Your Name",
       "authorRole": "UI/UX Designer"
+    },
+    "testimonial": {
+      "quote": "This team completely transformed our product vision into a real, measurable experience.",
+      "authorName": "Client Name",
+      "authorRole": "CEO, Company"
+    },
+    "team": {
+      "title": "The Team",
+      "member1Name": "First Last",
+      "member1Role": "Product Designer",
+      "member2Name": "First Last",
+      "member2Role": "UX Researcher"
+    },
+    "awards": {
+      "title": "Recognition",
+      "award1Title": "Site of the Day",
+      "award1Issuer": "Awwwards"
+    },
+    "techStack": {
+      "title": "Tech Stack",
+      "categoryDesign": "Design",
+      "categoryDev": "Development"
+    },
+    "timeline": {
+      "title": "Timeline",
+      "milestone1Date": "Week 1",
+      "milestone1Title": "Kickoff",
+      "milestone1Desc": "Stakeholder alignment and initial research.",
+      "milestone2Date": "Week 4",
+      "milestone2Title": "Final Delivery",
+      "milestone2Desc": "Handoff to development and launch."
     }
   },
   "themes": {
@@ -191,6 +248,40 @@
     "updateAvailable": "New version available",
     "update": "Update",
     "dismiss": "Dismiss notification"
+  },
+  "preview": {
+    "invalidTitle": "Invalid preview link",
+    "invalidBody": "This link is broken, incomplete, or the project is no longer available. Ask whoever shared it for a new one.",
+    "backHome": "Go to BeBrief Studio",
+    "readOnlyBadge": "Read-only",
+    "duplicateCta": "Duplicate & edit",
+    "duplicated": "Project duplicated! You can edit it now."
+  },
+  "onboarding": {
+    "skip": "Skip",
+    "back": "Back",
+    "next": "Next",
+    "start": "Start creating",
+    "stepIndicator": "Step",
+    "replay": "View intro",
+    "steps": [
+      {
+        "title": "Welcome to BeBrief Studio",
+        "body": "Build modular design case studies for Behance: drag sections around, edit them live on the canvas, and tell your story without rigid templates."
+      },
+      {
+        "title": "Customize every detail",
+        "body": "Choose from 20+ themes or build your own. Every section has its own colors, fonts and layout — no code required."
+      },
+      {
+        "title": "Export ready to publish",
+        "body": "Download a self-contained HTML file, high-resolution images or a PDF — or save your project as a .bbs.json file to pick up later."
+      },
+      {
+        "title": "Everything stays in your browser",
+        "body": "No accounts, no servers: your projects are saved locally on your device. Export backup copies any time you like."
+      }
+    ]
   },
   "legal": {
     "privacyLink": "Privacy Policy",

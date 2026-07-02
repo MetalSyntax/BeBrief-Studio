@@ -24,7 +24,18 @@
     "mockups": "Maquetas / Mockups",
     "ux-flow": "UX Flow",
     "results": "Resultados / KPIs",
-    "footer": "Pie de Página / Footer"
+    "footer": "Pie de Página / Footer",
+    "testimonial": "Testimonio",
+    "team": "Equipo",
+    "awards": "Premios",
+    "tech-stack": "Stack Tecnológico",
+    "timeline": "Línea de Tiempo"
+  },
+  "common": {
+    "addMember": "Añadir Miembro",
+    "addAward": "Añadir Premio",
+    "addItem": "Añadir Herramienta",
+    "addMilestone": "Añadir Hito"
   },
   "inspector": {
     "tabs": {
@@ -57,7 +68,13 @@
       "year": "Año",
       "socialLinks": "Enlaces Sociales / Redes",
       "paddings": "Padding (Relleno Vertical)",
-      "sectionWidth": "Ancho de la Sección"
+      "sectionWidth": "Ancho de la Sección",
+      "quote": "Cita / Testimonio",
+      "authorPhoto": "Foto del Autor",
+      "teamMembers": "Miembros del Equipo",
+      "awardsList": "Premios y Reconocimientos",
+      "techItems": "Herramientas / Tecnologías",
+      "milestones": "Hitos"
     },
     "style": {
       "inheritTheme": "Heredar de Tema",
@@ -90,7 +107,16 @@
   },
   "dashboard": {
     "savedProjects": "Proyectos Guardados",
-    "createCatchy": "Crea Case Studies que cautiven",
+    "heroEyebrow": "Editor de Case Studies para Behance",
+    "createCatchyPrefix": "Crea Case Studies que",
+    "createCatchyHighlight": "cautiven",
+    "statSections": "tipos de sección",
+    "statThemes": "temas",
+    "statProjects": "proyectos guardados",
+    "footerTagline": "Editor modular de case studies para Behance — 100% local, sin cuentas ni servidores.",
+    "footerLegalGroup": "Legal",
+    "footerCreatorGroup": "Creado por",
+    "footerCopyright": "Edición modular y exportación standalone.",
     "subtitle": "Diseña la estructura de tu caso de estudio de Behance de forma modular. Personaliza colores, fuentes y contenidos, y expórtalo a HTML o PDF standalone.",
     "createFromTemplate": "Crear desde Plantilla",
     "myStudies": "Mis Case Studies ({{count}})",
@@ -172,6 +198,37 @@
     "footer": {
       "authorName": "Tu Nombre",
       "authorRole": "Diseñador UI/UX"
+    },
+    "testimonial": {
+      "quote": "Este equipo transformó por completo nuestra visión de producto en una experiencia real y medible.",
+      "authorName": "Nombre del Cliente",
+      "authorRole": "CEO, Empresa"
+    },
+    "team": {
+      "title": "El Equipo",
+      "member1Name": "Nombre Apellido",
+      "member1Role": "Product Designer",
+      "member2Name": "Nombre Apellido",
+      "member2Role": "UX Researcher"
+    },
+    "awards": {
+      "title": "Reconocimientos",
+      "award1Title": "Site of the Day",
+      "award1Issuer": "Awwwards"
+    },
+    "techStack": {
+      "title": "Stack Tecnológico",
+      "categoryDesign": "Diseño",
+      "categoryDev": "Desarrollo"
+    },
+    "timeline": {
+      "title": "Línea de Tiempo",
+      "milestone1Date": "Semana 1",
+      "milestone1Title": "Kickoff",
+      "milestone1Desc": "Alineación con stakeholders y research inicial.",
+      "milestone2Date": "Semana 4",
+      "milestone2Title": "Entrega Final",
+      "milestone2Desc": "Handoff a desarrollo y lanzamiento."
     }
   },
   "themes": {
@@ -191,6 +248,40 @@
     "updateAvailable": "Nueva versión disponible",
     "update": "Actualizar",
     "dismiss": "Cerrar notificación"
+  },
+  "preview": {
+    "invalidTitle": "Enlace de vista previa inválido",
+    "invalidBody": "Este enlace está dañado, incompleto, o el proyecto ya no está disponible. Pide un enlace nuevo a quien lo compartió.",
+    "backHome": "Ir a BeBrief Studio",
+    "readOnlyBadge": "Solo lectura",
+    "duplicateCta": "Duplicar y editar",
+    "duplicated": "¡Proyecto duplicado! Ya puedes editarlo."
+  },
+  "onboarding": {
+    "skip": "Omitir",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "start": "Empezar a crear",
+    "stepIndicator": "Paso",
+    "replay": "Ver introducción",
+    "steps": [
+      {
+        "title": "Bienvenido a BeBrief Studio",
+        "body": "Crea case studies de diseño modulares para Behance: arrastra secciones, edítalas en vivo sobre el lienzo y arma tu historia sin plantillas rígidas."
+      },
+      {
+        "title": "Personaliza cada detalle",
+        "body": "Elige entre más de 20 temas o crea el tuyo propio. Cada sección tiene sus propios colores, tipografías y layout — sin tocar código."
+      },
+      {
+        "title": "Exporta listo para publicar",
+        "body": "Descarga HTML autocontenible, imágenes en alta resolución o un PDF — o guarda tu proyecto como .bbs.json para retomarlo después."
+      },
+      {
+        "title": "Todo se queda en tu navegador",
+        "body": "No hay cuentas ni servidores: tus proyectos se guardan localmente en tu dispositivo. Exporta copias de respaldo cuando quieras."
+      }
+    ]
   },
   "legal": {
     "privacyLink": "Política de Privacidad",

@@ -24,7 +24,18 @@
     "mockups": "Mockups",
     "ux-flow": "Fluxo UX",
     "results": "Resultados / KPIs",
-    "footer": "Rodapé"
+    "footer": "Rodapé",
+    "testimonial": "Depoimento",
+    "team": "Equipe",
+    "awards": "Prêmios",
+    "tech-stack": "Stack Tecnológico",
+    "timeline": "Linha do Tempo"
+  },
+  "common": {
+    "addMember": "Adicionar Membro",
+    "addAward": "Adicionar Prêmio",
+    "addItem": "Adicionar Ferramenta",
+    "addMilestone": "Adicionar Marco"
   },
   "inspector": {
     "tabs": {
@@ -57,7 +68,13 @@
       "year": "Ano",
       "socialLinks": "Links Sociais",
       "paddings": "Padding (Preenchimento Vertical)",
-      "sectionWidth": "Largura da Seção"
+      "sectionWidth": "Largura da Seção",
+      "quote": "Citação / Depoimento",
+      "authorPhoto": "Foto do Autor",
+      "teamMembers": "Membros da Equipe",
+      "awardsList": "Prêmios e Reconhecimentos",
+      "techItems": "Ferramentas / Tecnologias",
+      "milestones": "Marcos"
     },
     "style": {
       "inheritTheme": "Herdar do Tema",
@@ -90,7 +107,16 @@
   },
   "dashboard": {
     "savedProjects": "Projetos Salvos",
-    "createCatchy": "Crie Case Studies que cativam",
+    "heroEyebrow": "Editor de Case Studies para o Behance",
+    "createCatchyPrefix": "Crie Case Studies que",
+    "createCatchyHighlight": "cativam",
+    "statSections": "tipos de seção",
+    "statThemes": "temas",
+    "statProjects": "projetos salvos",
+    "footerTagline": "Editor modular de case studies para o Behance — 100% local, sem contas nem servidores.",
+    "footerLegalGroup": "Legal",
+    "footerCreatorGroup": "Criado por",
+    "footerCopyright": "Edição modular e exportação standalone.",
     "subtitle": "Projete a estrutura do seu caso de estudo do Behance de forma modular. Personalize cores, fontes e conteúdos, e exporte para HTML ou PDF standalone.",
     "createFromTemplate": "Criar a partir de Modelo",
     "myStudies": "Meus Case Studies ({{count}})",
@@ -172,6 +198,37 @@
     "footer": {
       "authorName": "Seu Nome",
       "authorRole": "Designer UI/UX"
+    },
+    "testimonial": {
+      "quote": "Esta equipe transformou completamente nossa visão de produto em uma experiência real e mensurável.",
+      "authorName": "Nome do Cliente",
+      "authorRole": "CEO, Empresa"
+    },
+    "team": {
+      "title": "A Equipe",
+      "member1Name": "Nome Sobrenome",
+      "member1Role": "Product Designer",
+      "member2Name": "Nome Sobrenome",
+      "member2Role": "UX Researcher"
+    },
+    "awards": {
+      "title": "Reconhecimentos",
+      "award1Title": "Site of the Day",
+      "award1Issuer": "Awwwards"
+    },
+    "techStack": {
+      "title": "Stack Tecnológico",
+      "categoryDesign": "Design",
+      "categoryDev": "Desenvolvimento"
+    },
+    "timeline": {
+      "title": "Linha do Tempo",
+      "milestone1Date": "Semana 1",
+      "milestone1Title": "Kickoff",
+      "milestone1Desc": "Alinhamento com stakeholders e pesquisa inicial.",
+      "milestone2Date": "Semana 4",
+      "milestone2Title": "Entrega Final",
+      "milestone2Desc": "Handoff para desenvolvimento e lançamento."
     }
   },
   "themes": {
@@ -191,6 +248,40 @@
     "updateAvailable": "Nova versão disponível",
     "update": "Atualizar",
     "dismiss": "Fechar notificação"
+  },
+  "preview": {
+    "invalidTitle": "Link de pré-visualização inválido",
+    "invalidBody": "Este link está corrompido, incompleto, ou o projeto não está mais disponível. Peça um novo link a quem o compartilhou.",
+    "backHome": "Ir para o BeBrief Studio",
+    "readOnlyBadge": "Somente leitura",
+    "duplicateCta": "Duplicar e editar",
+    "duplicated": "Projeto duplicado! Você já pode editá-lo."
+  },
+  "onboarding": {
+    "skip": "Pular",
+    "back": "Voltar",
+    "next": "Próximo",
+    "start": "Começar a criar",
+    "stepIndicator": "Etapa",
+    "replay": "Ver introdução",
+    "steps": [
+      {
+        "title": "Bem-vindo ao BeBrief Studio",
+        "body": "Crie case studies de design modulares para o Behance: arraste seções, edite-as ao vivo na tela e conte sua história sem templates rígidos."
+      },
+      {
+        "title": "Personalize cada detalhe",
+        "body": "Escolha entre mais de 20 temas ou crie o seu. Cada seção tem suas próprias cores, fontes e layout — sem precisar programar."
+      },
+      {
+        "title": "Exporte pronto para publicar",
+        "body": "Baixe um HTML autocontido, imagens em alta resolução ou um PDF — ou salve seu projeto como .bbs.json para continuar depois."
+      },
+      {
+        "title": "Tudo fica no seu navegador",
+        "body": "Sem contas, sem servidores: seus projetos são salvos localmente no seu dispositivo. Exporte backups quando quiser."
+      }
+    ]
   },
   "legal": {
     "privacyLink": "Política de Privacidade",

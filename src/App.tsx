@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Toolbar } from './components/editor/Toolbar'
 import { SectionList } from './components/editor/SectionList'
 import { EditorCanvas } from './components/editor/EditorCanvas'
@@ -7,6 +7,8 @@ import { TextFormatToolbar } from './components/editor/TextFormatToolbar'
 import { useProjectStore } from './lib/store/projectStore'
 import { exportProjectToHTML } from './lib/export/htmlExporter'
 import { Dashboard } from './components/dashboard/Dashboard'
+import { SharedPreviewView } from './components/shared/SharedPreviewView'
+import { decodeAndDecompressProject } from './lib/utils/shareHelper'
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts'
 import { useToast } from './components/shared/ToastProvider'
 import { useTranslation } from 'react-i18next'
@@ -21,12 +23,24 @@ function App() {
 
   const [activeMobileTab, setActiveMobileTab] = useState<'canvas' | 'sections' | 'inspector'>('canvas')
 
+  // A "?share=" URL param opens a standalone read-only preview instead of the
+  // normal dashboard/editor — it never touches the local project store.
+  const sharePayload = useMemo(() => new URLSearchParams(window.location.search).get('share'), [])
+  const sharedProject = useMemo(
+    () => (sharePayload ? decodeAndDecompressProject(sharePayload) : undefined),
+    [sharePayload]
+  )
+
   // Auto-switch to properties inspector when a section is clicked/selected
   useEffect(() => {
     if (activeSectionId) {
       setActiveMobileTab('inspector')
     }
   }, [activeSectionId])
+
+  if (sharePayload) {
+    return <SharedPreviewView project={sharedProject ?? null} />
+  }
 
   if (view === 'dashboard') {
     return <Dashboard />

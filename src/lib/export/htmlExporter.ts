@@ -1,6 +1,24 @@
 import type { Project } from '../types/project.types'
 import { themes } from '../themes'
 
+const escapeHtml = (value: unknown): string => {
+  if (value === null || value === undefined) return ''
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
+
+// Escapes attribute-unsafe characters and strips javascript: URIs from user-provided
+// href/src values (data:/http(s):/blob: URIs — e.g. base64 images — remain intact).
+const sanitizeUrl = (value: unknown): string => {
+  const url = String(value ?? '').trim()
+  if (/^javascript:/i.test(url)) return '#'
+  return escapeHtml(url)
+}
+
 export function exportProjectToHTML(project: Project, lang = 'en'): string {
   const activeTheme = project.theme === 'custom' 
     ? (project.customTheme || {
@@ -103,7 +121,7 @@ export function exportProjectToHTML(project: Project, lang = 'en'): string {
     if (!content || content.trim() === '' || content.trim() === '<br>') return ''
     const classAttr = className ? ` class="${className}"` : ''
     const styleAttr = inlineStyle ? ` style="${inlineStyle}"` : ''
-    return `<${tag}${classAttr}${styleAttr}>${content.replace(/\n/g, '<br>')}</${tag}>`
+    return `<${tag}${classAttr}${styleAttr}>${escapeHtml(content).replace(/\n/g, '<br>')}</${tag}>`
   }
 
   const renderedSections = sortedSections.map((section) => {
@@ -159,7 +177,7 @@ export function exportProjectToHTML(project: Project, lang = 'en'): string {
             <div class="colors-${data.layout === 'horizontal-strip' ? 'strip' : 'grid'}">
               ${(data.colors || []).map((c: any) => `
                 <div class="color-card">
-                  <div class="color-swatch" style="background-color: ${c.hex};"></div>
+                  <div class="color-swatch" style="background-color: ${escapeHtml(c.hex)};"></div>
                   ${wrap('div', c.name, 'color-name')}
                   ${wrap('div', c.hex, 'color-hex font-mono')}
                   ${wrap('div', c.role, 'color-role')}
@@ -183,12 +201,12 @@ export function exportProjectToHTML(project: Project, lang = 'en'): string {
               ${(data.mockups || []).map((mock: any, idx: number) => `
                 <div class="mockup-item device-${mock.deviceFrame}" style="display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 12px; height: 100%;">
                   <div style="flex: 1; width: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; min-height: 0; position: relative;">
-                    ${mock.image 
-                      ? `<img src="${mock.image}" alt="${mock.alt || ''}" style="max-height: 100%; max-width: 100%; object-fit: contain;">` 
+                    ${mock.image
+                      ? `<img src="${sanitizeUrl(mock.image)}" alt="${escapeHtml(mock.alt || '')}" style="max-height: 100%; max-width: 100%; object-fit: contain;">`
                       : `
                       <div class="mockup-placeholder">
                         <div class="device-frame-outline"></div>
-                        <span>${mock.alt || `Mockup ${idx + 1}`}</span>
+                        <span>${escapeHtml(mock.alt || `Mockup ${idx + 1}`)}</span>
                       </div>`
                     }
                   </div>
@@ -206,14 +224,14 @@ export function exportProjectToHTML(project: Project, lang = 'en'): string {
             <div>
               ${wrap('h3', data.authorName, 'footer-author font-display')}
               <p class="footer-meta font-body">
-                ${data.authorRole ? data.authorRole : ''}
+                ${data.authorRole ? escapeHtml(data.authorRole) : ''}
                 ${data.authorRole && data.year ? ' &middot; ' : ''}
-                ${data.year ? data.year : ''}
+                ${data.year ? escapeHtml(data.year) : ''}
               </p>
             </div>
             <div class="footer-links">
               ${(data.socialLinks || []).map((l: any) => `
-                <a href="${l.url}" class="footer-link font-mono">${l.platform}</a>
+                <a href="${sanitizeUrl(l.url)}" class="footer-link font-mono">${escapeHtml(l.platform)}</a>
               `).join('')}
             </div>
           </div>
@@ -231,7 +249,7 @@ export function exportProjectToHTML(project: Project, lang = 'en'): string {
               ${!style.hideDescription ? wrap('p', data.description, 'body-text font-body') : ''}
             </div>
             <div class="image-wrapper">
-              ${data.image ? `<img src="${data.image}">` : '<div class="img-placeholder">Problem Image</div>'}
+              ${data.image ? `<img src="${sanitizeUrl(data.image)}">` : '<div class="img-placeholder">Problem Image</div>'}
             </div>
           </div>
         </div>`
@@ -271,8 +289,8 @@ export function exportProjectToHTML(project: Project, lang = 'en'): string {
                     ${wrap('span', font.role, 'font-role font-mono')}
                     ${wrap('h3', font.name, 'font-name')}
                   </div>
-                  <div class="font-sample" style="font-family: '${font.name}', sans-serif;">
-                    ${font.sample}
+                  <div class="font-sample" style="font-family: '${escapeHtml(font.name)}', sans-serif;">
+                    ${escapeHtml(font.sample)}
                   </div>
                 </div>
               `).join('')}
@@ -290,7 +308,7 @@ export function exportProjectToHTML(project: Project, lang = 'en'): string {
             </div>
             ${!style.hideDescription ? wrap('p', data.description, 'section-desc font-body') : ''}
             <div class="flow-image-wrapper">
-              ${data.image ? `<img src="${data.image}">` : '<div class="img-placeholder">UX Flow Map</div>'}
+              ${data.image ? `<img src="${sanitizeUrl(data.image)}">` : '<div class="img-placeholder">UX Flow Map</div>'}
             </div>
           </div>
         </div>`
@@ -317,6 +335,112 @@ export function exportProjectToHTML(project: Project, lang = 'en'): string {
           </div>
         </div>`
 
+      case 'testimonial':
+        return `
+        <div class="section-container" ${secStyleAttr}>
+          <div class="testimonial-content">
+            <div class="testimonial-quote-mark">&ldquo;</div>
+            ${wrap('p', data.quote, 'testimonial-quote font-display')}
+            <div class="testimonial-author-row">
+              ${data.authorPhoto
+                ? `<img src="${sanitizeUrl(data.authorPhoto)}" alt="${escapeHtml(data.authorName || '')}" class="testimonial-avatar">`
+                : '<div class="testimonial-avatar testimonial-avatar-placeholder"></div>'
+              }
+              <div>
+                ${wrap('div', data.authorName, 'testimonial-author-name font-display')}
+                ${wrap('div', data.authorRole, 'testimonial-author-role font-body')}
+              </div>
+            </div>
+          </div>
+        </div>`
+
+      case 'team':
+        return `
+        <div class="section-container" ${secStyleAttr}>
+          <div class="section-content">
+            <div class="section-header">
+              ${!style.hideSectionNumber ? wrap('span', data.sectionNumber, 'section-number') : ''}
+              ${!style.hideTitle ? wrap('h2', data.title, 'section-title font-display') : ''}
+            </div>
+            <div class="team-grid">
+              ${(data.members || []).map((member: any) => `
+                <div class="team-member">
+                  ${member.photo
+                    ? `<img src="${sanitizeUrl(member.photo)}" alt="${escapeHtml(member.name || '')}" class="team-avatar">`
+                    : '<div class="team-avatar team-avatar-placeholder"></div>'
+                  }
+                  ${wrap('div', member.name, 'team-member-name font-display')}
+                  ${wrap('div', member.role, 'team-member-role font-body')}
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>`
+
+      case 'awards':
+        return `
+        <div class="section-container" ${secStyleAttr}>
+          <div class="section-content">
+            <div class="section-header">
+              ${!style.hideSectionNumber ? wrap('span', data.sectionNumber, 'section-number') : ''}
+              ${!style.hideTitle ? wrap('h2', data.title, 'section-title font-display') : ''}
+            </div>
+            <div class="awards-grid">
+              ${(data.awards || []).map((award: any) => `
+                <div class="award-card">
+                  <div class="award-icon">&#9733;</div>
+                  <div>
+                    ${wrap('div', award.title, 'award-title font-display')}
+                    <div class="award-meta font-mono">
+                      ${escapeHtml(award.issuer || '')}${award.issuer && award.year ? ' &middot; ' : ''}${escapeHtml(award.year || '')}
+                    </div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>`
+
+      case 'tech-stack':
+        return `
+        <div class="section-container" ${secStyleAttr}>
+          <div class="section-content">
+            <div class="section-header">
+              ${!style.hideSectionNumber ? wrap('span', data.sectionNumber, 'section-number') : ''}
+              ${!style.hideTitle ? wrap('h2', data.title, 'section-title font-display') : ''}
+            </div>
+            <div class="tech-stack-list">
+              ${(data.items || []).map((item: any) => `
+                <div class="tech-item">
+                  ${wrap('div', item.name, 'tech-item-name font-display')}
+                  ${wrap('div', item.category, 'tech-item-category font-mono')}
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>`
+
+      case 'timeline':
+        return `
+        <div class="section-container" ${secStyleAttr}>
+          <div class="section-content">
+            <div class="section-header">
+              ${!style.hideSectionNumber ? wrap('span', data.sectionNumber, 'section-number') : ''}
+              ${!style.hideTitle ? wrap('h2', data.title, 'section-title font-display') : ''}
+            </div>
+            <div class="timeline-list">
+              ${(data.milestones || []).map((milestone: any) => `
+                <div class="timeline-item">
+                  <div class="timeline-dot"></div>
+                  ${wrap('div', milestone.date, 'timeline-date font-mono')}
+                  ${wrap('h3', milestone.title, 'timeline-title font-display')}
+                  ${wrap('p', milestone.description, 'timeline-desc font-body')}
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>`
+
       default:
         return ''
     }
@@ -327,7 +451,7 @@ export function exportProjectToHTML(project: Project, lang = 'en'): string {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${project.title}</title>
+  <title>${escapeHtml(project.title)}</title>
   <style>
     ${fontLink}
 
@@ -835,6 +959,214 @@ ${cssVariables}
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.1em;
+    }
+
+    /* Testimonial */
+    .testimonial-content {
+      max-width: 880px;
+      margin: 0 auto;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .testimonial-quote-mark {
+      font-size: 64px;
+      line-height: 1;
+      color: var(--accent);
+      opacity: 0.7;
+      margin-bottom: 16px;
+    }
+
+    .testimonial-quote {
+      font-size: 30px;
+      font-weight: 300;
+      line-height: 1.35;
+      margin-bottom: 32px;
+    }
+
+    .testimonial-author-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-align: left;
+    }
+
+    .testimonial-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 999px;
+      object-fit: cover;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .testimonial-avatar-placeholder {
+      background-color: rgba(255,255,255,0.05);
+    }
+
+    .testimonial-author-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .testimonial-author-role {
+      font-size: 12px;
+      opacity: 0.6;
+    }
+
+    /* Team */
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 24px;
+    }
+
+    .team-member {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 12px;
+    }
+
+    .team-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 999px;
+      object-fit: cover;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .team-avatar-placeholder {
+      background-color: rgba(255,255,255,0.05);
+    }
+
+    .team-member-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .team-member-role {
+      font-size: 12px;
+      opacity: 0.6;
+    }
+
+    /* Awards */
+    .awards-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .award-card {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background-color: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 16px;
+      padding: 20px;
+    }
+
+    .award-icon {
+      width: 40px;
+      height: 40px;
+      min-width: 40px;
+      border-radius: 999px;
+      background-color: rgba(255,255,255,0.05);
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .award-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .award-meta {
+      font-size: 12px;
+      opacity: 0.6;
+    }
+
+    /* Tech Stack */
+    .tech-stack-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .tech-item {
+      background-color: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 999px;
+      padding: 12px 20px;
+      min-width: 120px;
+    }
+
+    .tech-item-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .tech-item-category {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      opacity: 0.5;
+    }
+
+    /* Timeline */
+    .timeline-list {
+      position: relative;
+      margin-left: 8px;
+      padding-left: 24px;
+      border-left: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+    }
+
+    .timeline-item {
+      position: relative;
+    }
+
+    .timeline-dot {
+      position: absolute;
+      left: -29px;
+      top: 4px;
+      width: 12px;
+      height: 12px;
+      border-radius: 999px;
+      background-color: var(--accent);
+    }
+
+    .timeline-date {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--accent);
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .timeline-title {
+      font-size: 17px;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .timeline-desc {
+      font-size: 14px;
+      opacity: 0.7;
+      line-height: 1.5;
     }
 
     .footer-link:hover {

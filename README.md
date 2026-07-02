@@ -1,13 +1,13 @@
 # BeBrief Studio
 
-**v2.0.0** — A premium, modular case study editor for Behance. Build, style and export stunning project briefs with a live canvas, dedicated section editors, multi-project dashboard, JSON portability, and native macOS distribution via Tauri.
+**v2.1.0** — A premium, modular case study editor for Behance. Build, style and export stunning project briefs with a live canvas, dedicated section editors, multi-project dashboard, JSON portability, and native macOS distribution via Tauri.
 
 ---
 
 ## Key Features
 
 * **Live Canvas Editing** — Click any text directly on the canvas to edit in place. Edits are instant with no modal dialogs.
-* **10 Section Types** — Cover, Overview, Problem, Process, Color Palette, Typography, Mockups, UX Flow, Results, Footer. Each has a dedicated inspector with full content and style controls.
+* **15 Section Types** — Cover, Overview, Problem, Process, Color Palette, Typography, Mockups, UX Flow, Results, Footer, Testimonial, Team, Awards, Tech Stack, Timeline. Each has a dedicated inspector with full content and style controls.
 * **Multi-Project Dashboard** — Create, duplicate, delete and switch between projects. Export any project as a `.bbs.json` portable file; import it on any device.
 * **JSON Portability** — Save the entire project state (sections, styles, theme, custom tokens) to a versioned `.bbs.json` file and restore it later.
 * **Theme System** — 8 built-in themes plus a fully interactive custom theme creator with live color pickers and typography selectors. All themes powered by CSS custom properties.

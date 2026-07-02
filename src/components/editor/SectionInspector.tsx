@@ -1351,6 +1351,412 @@ export function SectionInspector() {
     </div>
   )
 
+  // Testimonial section editor
+  const renderTestimonialEditor = (data: any) => (
+    <div className="space-y-4">
+      <div>
+        {renderFieldHeader(t('inspector.field.sectionNumber'), 'hideSectionNumber')}
+        <input
+          type="text"
+          value={data.sectionNumber || ''}
+          onChange={(e) => handleDataChange('sectionNumber', e.target.value)}
+          className="w-full bg-zinc-900 border border-white/10 rounded-lg text-xs px-3 py-2 text-white focus:outline-none"
+        />
+      </div>
+
+      <div>
+        {renderFieldHeader(t('inspector.field.quote'), 'hideDescription')}
+        <textarea
+          rows={4}
+          value={data.quote || ''}
+          onChange={(e) => handleDataChange('quote', e.target.value)}
+          className="w-full bg-zinc-900 border border-white/10 rounded-lg text-xs px-3 py-2 text-white focus:outline-none resize-none"
+        />
+      </div>
+
+      <div>
+        <label className="text-[10px] font-mono font-bold tracking-wider text-zinc-500 block mb-1 uppercase">{t('inspector.field.authorName')}</label>
+        <input
+          type="text"
+          value={data.authorName || ''}
+          onChange={(e) => handleDataChange('authorName', e.target.value)}
+          className="w-full bg-zinc-900 border border-white/10 rounded-lg text-xs px-3 py-2 text-white focus:outline-none"
+        />
+      </div>
+
+      <div>
+        <label className="text-[10px] font-mono font-bold tracking-wider text-zinc-500 block mb-1 uppercase">{t('inspector.field.authorRole')}</label>
+        <input
+          type="text"
+          value={data.authorRole || ''}
+          onChange={(e) => handleDataChange('authorRole', e.target.value)}
+          className="w-full bg-zinc-900 border border-white/10 rounded-lg text-xs px-3 py-2 text-white focus:outline-none"
+        />
+      </div>
+
+      <ImageUploader
+        label={t('inspector.field.authorPhoto')}
+        value={data.authorPhoto || ''}
+        onChange={(val) => handleDataChange('authorPhoto', val)}
+      />
+    </div>
+  )
+
+  // Team section editor
+  const renderTeamEditor = (data: any) => {
+    const handleMemberChange = (index: number, field: 'name' | 'role' | 'photo', value: string) => {
+      const updatedMembers = [...(data.members || [])]
+      updatedMembers[index] = { ...updatedMembers[index], [field]: value }
+      handleDataChange('members', updatedMembers)
+    }
+
+    const addMember = () => {
+      const updatedMembers = [...(data.members || []), { name: t('inspector.field.authorName'), role: '', photo: '' }]
+      handleDataChange('members', updatedMembers)
+    }
+
+    const removeMember = (index: number) => {
+      const updatedMembers = (data.members || []).filter((_: any, i: number) => i !== index)
+      handleDataChange('members', updatedMembers)
+    }
+
+    return (
+      <div className="space-y-4">
+        <div className="grid grid-cols-3 gap-2">
+          <div className="col-span-1">
+            {renderFieldHeader(t('inspector.field.sectionNumber'), 'hideSectionNumber')}
+            <input
+              type="text"
+              value={data.sectionNumber || ''}
+              onChange={(e) => handleDataChange('sectionNumber', e.target.value)}
+              className="w-full bg-zinc-900 border border-white/10 rounded-lg text-xs px-3 py-2 text-white focus:outline-none"
+            />
+          </div>
+          <div className="col-span-2">
+            {renderFieldHeader(t('inspector.field.sectionTitle'), 'hideTitle')}
+            <input
+              type="text"
+              value={data.title || ''}
+              onChange={(e) => handleDataChange('title', e.target.value)}
+              className="w-full bg-zinc-900 border border-white/10 rounded-lg text-xs px-3 py-2 text-white focus:outline-none"
+            />
+          </div>
+        </div>
+
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <label className="text-[10px] font-mono font-bold tracking-wider text-zinc-500 uppercase">{t('inspector.field.teamMembers')}</label>
+            <button
+              onClick={addMember}
+              className="text-[10px] flex items-center gap-1 text-violet-400 hover:text-white transition-colors"
+            >
+              <Plus size={10} /> {t('common.addMember')}
+            </button>
+          </div>
+
+          <div className="space-y-3 max-h-96 overflow-y-auto pr-1">
+            {(data.members || []).map((member: any, index: number) => (
+              <div key={index} className="space-y-2 bg-white/[0.01] p-2 border border-white/5 rounded-lg">
+                <div className="flex gap-2 items-center">
+                  <input
+                    type="text"
+                    placeholder={t('inspector.field.authorName')}
+                    value={member.name || ''}
+                    onChange={(e) => handleMemberChange(index, 'name', e.target.value)}
+                    className="flex-1 min-w-0 bg-zinc-900 border border-white/10 rounded px-2 py-1 text-xs text-white"
+                  />
+                  <input
+                    type="text"
+                    placeholder={t('inspector.field.authorRole')}
+                    value={member.role || ''}
+                    onChange={(e) => handleMemberChange(index, 'role', e.target.value)}
+                    className="flex-1 min-w-0 bg-zinc-900 border border-white/10 rounded px-2 py-1 text-xs text-white"
+                  />
+                  <button
+                    onClick={() => removeMember(index)}
+                    className="p-1 hover:bg-red-500/10 text-zinc-500 hover:text-red-400 rounded shrink-0"
+                  >
+                    <Trash2 size={12} />
+                  </button>
+                </div>
+                <ImageUploader
+                  label={t('inspector.field.authorPhoto')}
+                  value={member.photo || ''}
+                  onChange={(val) => handleMemberChange(index, 'photo', val)}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Awards section editor
+  const renderAwardsEditor = (data: any) => {
+    const handleAwardChange = (index: number, field: 'title' | 'issuer' | 'year', value: string) => {
+      const updatedAwards = [...(data.awards || [])]
+      updatedAwards[index] = { ...updatedAwards[index], [field]: value }
+      handleDataChange('awards', updatedAwards)
+    }
+
+    const addAward = () => {
+      const updatedAwards = [...(data.awards || []), { title: '', issuer: '', year: new Date().getFullYear().toString() }]
+      handleDataChange('awards', updatedAwards)
+    }
+
+    const removeAward = (index: number) => {
+      const updatedAwards = (data.awards || []).filter((_: any, i: number) => i !== index)
+      handleDataChange('awards', updatedAwards)
+    }
+
+    return (
+      <div className="space-y-4">
+        <div className="grid grid-cols-3 gap-2">
+          <div className="col-span-1">
+            {renderFieldHeader(t('inspector.field.sectionNumber'), 'hideSectionNumber')}
+            <input
+              type="text"
+              value={data.sectionNumber || ''}
+              onChange={(e) => handleDataChange('sectionNumber', e.target.value)}
+              className="w-full bg-zinc-900 border border-white/10 rounded-lg text-xs px-3 py-2 text-white focus:outline-none"
+            />
+          </div>
+          <div className="col-span-2">
+            {renderFieldHeader(t('inspector.field.sectionTitle'), 'hideTitle')}
+            <input
+              type="text"
+              value={data.title || ''}
+              onChange={(e) => handleDataChange('title', e.target.value)}
+              className="w-full bg-zinc-900 border border-white/10 rounded-lg text-xs px-3 py-2 text-white focus:outline-none"
+            />
+          </div>
+        </div>
+
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <label className="text-[10px] font-mono font-bold tracking-wider text-zinc-500 uppercase">{t('inspector.field.awardsList')}</label>
+            <button
+              onClick={addAward}
+              className="text-[10px] flex items-center gap-1 text-violet-400 hover:text-white transition-colors"
+            >
+              <Plus size={10} /> {t('common.addAward')}
+            </button>
+          </div>
+
+          <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
+            {(data.awards || []).map((award: any, index: number) => (
+              <div key={index} className="flex gap-2 items-center bg-white/[0.01] p-2 border border-white/5 rounded-lg">
+                <input
+                  type="text"
+                  placeholder="Título"
+                  value={award.title || ''}
+                  onChange={(e) => handleAwardChange(index, 'title', e.target.value)}
+                  className="flex-1 min-w-0 bg-zinc-900 border border-white/10 rounded px-2 py-1 text-xs text-white"
+                />
+                <input
+                  type="text"
+                  placeholder="Entidad"
+                  value={award.issuer || ''}
+                  onChange={(e) => handleAwardChange(index, 'issuer', e.target.value)}
+                  className="w-24 bg-zinc-900 border border-white/10 rounded px-2 py-1 text-xs text-white"
+                />
+                <input
+                  type="text"
+                  placeholder="Año"
+                  value={award.year || ''}
+                  onChange={(e) => handleAwardChange(index, 'year', e.target.value)}
+                  className="w-16 bg-zinc-900 border border-white/10 rounded px-2 py-1 text-xs text-white"
+                />
+                <button
+                  onClick={() => removeAward(index)}
+                  className="p-1 hover:bg-red-500/10 text-zinc-500 hover:text-red-400 rounded shrink-0"
+                >
+                  <Trash2 size={12} />
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Tech stack section editor
+  const renderTechStackEditor = (data: any) => {
+    const handleItemChange = (index: number, field: 'name' | 'category', value: string) => {
+      const updatedItems = [...(data.items || [])]
+      updatedItems[index] = { ...updatedItems[index], [field]: value }
+      handleDataChange('items', updatedItems)
+    }
+
+    const addItem = () => {
+      const updatedItems = [...(data.items || []), { name: '', category: '' }]
+      handleDataChange('items', updatedItems)
+    }
+
+    const removeItem = (index: number) => {
+      const updatedItems = (data.items || []).filter((_: any, i: number) => i !== index)
+      handleDataChange('items', updatedItems)
+    }
+
+    return (
+      <div className="space-y-4">
+        <div className="grid grid-cols-3 gap-2">
+          <div className="col-span-1">
+            {renderFieldHeader(t('inspector.field.sectionNumber'), 'hideSectionNumber')}
+            <input
+              type="text"
+              value={data.sectionNumber || ''}
+              onChange={(e) => handleDataChange('sectionNumber', e.target.value)}
+              className="w-full bg-zinc-900 border border-white/10 rounded-lg text-xs px-3 py-2 text-white focus:outline-none"
+            />
+          </div>
+          <div className="col-span-2">
+            {renderFieldHeader(t('inspector.field.sectionTitle'), 'hideTitle')}
+            <input
+              type="text"
+              value={data.title || ''}
+              onChange={(e) => handleDataChange('title', e.target.value)}
+              className="w-full bg-zinc-900 border border-white/10 rounded-lg text-xs px-3 py-2 text-white focus:outline-none"
+            />
+          </div>
+        </div>
+
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <label className="text-[10px] font-mono font-bold tracking-wider text-zinc-500 uppercase">{t('inspector.field.techItems')}</label>
+            <button
+              onClick={addItem}
+              className="text-[10px] flex items-center gap-1 text-violet-400 hover:text-white transition-colors"
+            >
+              <Plus size={10} /> {t('common.addItem')}
+            </button>
+          </div>
+
+          <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
+            {(data.items || []).map((item: any, index: number) => (
+              <div key={index} className="flex gap-2 items-center bg-white/[0.01] p-2 border border-white/5 rounded-lg">
+                <input
+                  type="text"
+                  placeholder="Figma, React..."
+                  value={item.name || ''}
+                  onChange={(e) => handleItemChange(index, 'name', e.target.value)}
+                  className="flex-1 min-w-0 bg-zinc-900 border border-white/10 rounded px-2 py-1 text-xs text-white"
+                />
+                <input
+                  type="text"
+                  placeholder="Categoría"
+                  value={item.category || ''}
+                  onChange={(e) => handleItemChange(index, 'category', e.target.value)}
+                  className="w-24 bg-zinc-900 border border-white/10 rounded px-2 py-1 text-xs text-white"
+                />
+                <button
+                  onClick={() => removeItem(index)}
+                  className="p-1 hover:bg-red-500/10 text-zinc-500 hover:text-red-400 rounded shrink-0"
+                >
+                  <Trash2 size={12} />
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Timeline section editor
+  const renderTimelineEditor = (data: any) => {
+    const handleMilestoneChange = (index: number, field: 'date' | 'title' | 'description', value: string) => {
+      const updatedMilestones = [...(data.milestones || [])]
+      updatedMilestones[index] = { ...updatedMilestones[index], [field]: value }
+      handleDataChange('milestones', updatedMilestones)
+    }
+
+    const addMilestone = () => {
+      const updatedMilestones = [...(data.milestones || []), { date: '', title: '', description: '' }]
+      handleDataChange('milestones', updatedMilestones)
+    }
+
+    const removeMilestone = (index: number) => {
+      const updatedMilestones = (data.milestones || []).filter((_: any, i: number) => i !== index)
+      handleDataChange('milestones', updatedMilestones)
+    }
+
+    return (
+      <div className="space-y-4">
+        <div className="grid grid-cols-3 gap-2">
+          <div className="col-span-1">
+            {renderFieldHeader(t('inspector.field.sectionNumber'), 'hideSectionNumber')}
+            <input
+              type="text"
+              value={data.sectionNumber || ''}
+              onChange={(e) => handleDataChange('sectionNumber', e.target.value)}
+              className="w-full bg-zinc-900 border border-white/10 rounded-lg text-xs px-3 py-2 text-white focus:outline-none"
+            />
+          </div>
+          <div className="col-span-2">
+            {renderFieldHeader(t('inspector.field.sectionTitle'), 'hideTitle')}
+            <input
+              type="text"
+              value={data.title || ''}
+              onChange={(e) => handleDataChange('title', e.target.value)}
+              className="w-full bg-zinc-900 border border-white/10 rounded-lg text-xs px-3 py-2 text-white focus:outline-none"
+            />
+          </div>
+        </div>
+
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <label className="text-[10px] font-mono font-bold tracking-wider text-zinc-500 uppercase">{t('inspector.field.milestones')}</label>
+            <button
+              onClick={addMilestone}
+              className="text-[10px] flex items-center gap-1 text-violet-400 hover:text-white transition-colors"
+            >
+              <Plus size={10} /> {t('common.addMilestone')}
+            </button>
+          </div>
+
+          <div className="space-y-2 max-h-96 overflow-y-auto pr-1">
+            {(data.milestones || []).map((milestone: any, index: number) => (
+              <div key={index} className="space-y-1.5 bg-white/[0.01] p-2 border border-white/5 rounded-lg">
+                <div className="flex gap-2 items-center">
+                  <input
+                    type="text"
+                    placeholder="Fecha / Semana"
+                    value={milestone.date || ''}
+                    onChange={(e) => handleMilestoneChange(index, 'date', e.target.value)}
+                    className="w-28 bg-zinc-900 border border-white/10 rounded px-2 py-1 text-xs text-white"
+                  />
+                  <input
+                    type="text"
+                    placeholder={t('inspector.field.sectionTitle')}
+                    value={milestone.title || ''}
+                    onChange={(e) => handleMilestoneChange(index, 'title', e.target.value)}
+                    className="flex-1 min-w-0 bg-zinc-900 border border-white/10 rounded px-2 py-1 text-xs text-white"
+                  />
+                  <button
+                    onClick={() => removeMilestone(index)}
+                    className="p-1 hover:bg-red-500/10 text-zinc-500 hover:text-red-400 rounded shrink-0"
+                  >
+                    <Trash2 size={12} />
+                  </button>
+                </div>
+                <textarea
+                  rows={2}
+                  placeholder={t('inspector.field.description')}
+                  value={milestone.description || ''}
+                  onChange={(e) => handleMilestoneChange(index, 'description', e.target.value)}
+                  className="w-full bg-zinc-900 border border-white/10 rounded px-2 py-1 text-xs text-white resize-none"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   // Generic fallback editor
   const renderFallbackEditor = (data: any) => (
     <div className="space-y-4">
@@ -1419,6 +1825,16 @@ export function SectionInspector() {
         return renderResultsEditor(section.data)
       case 'ux-flow':
         return renderUXFlowEditor(section.data)
+      case 'testimonial':
+        return renderTestimonialEditor(section.data)
+      case 'team':
+        return renderTeamEditor(section.data)
+      case 'awards':
+        return renderAwardsEditor(section.data)
+      case 'tech-stack':
+        return renderTechStackEditor(section.data)
+      case 'timeline':
+        return renderTimelineEditor(section.data)
       default:
         return renderFallbackEditor(section.data)
     }

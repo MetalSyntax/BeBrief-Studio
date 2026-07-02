@@ -37,6 +37,14 @@ export interface ThemeTokens {
   '--section-w': string
 }
 
+export interface Comment {
+  id: string
+  sectionId: string
+  author: string
+  text: string
+  createdAt: string
+}
+
 export interface Project {
   id: string
   title: string
@@ -45,6 +53,7 @@ export interface Project {
   createdAt: string
   updatedAt: string
   customTheme?: ThemeTokens
+  comments?: Comment[]
 }
 
 export type SectionType =
@@ -58,6 +67,11 @@ export type SectionType =
   | 'ux-flow'
   | 'results'
   | 'footer'
+  | 'testimonial'
+  | 'team'
+  | 'awards'
+  | 'tech-stack'
+  | 'timeline'
 
 export interface Section {
   id: string
@@ -187,5 +201,52 @@ export interface FooterData {
   socialLinks: Array<{
     platform: string
     url: string
+  }>
+}
+
+export interface TestimonialData {
+  sectionNumber: string
+  quote: string
+  authorName: string
+  authorRole: string
+  authorPhoto?: string
+}
+
+export interface TeamData {
+  sectionNumber: string
+  title: string
+  members: Array<{
+    name: string
+    role: string
+    photo?: string
+  }>
+}
+
+export interface AwardsData {
+  sectionNumber: string
+  title: string
+  awards: Array<{
+    title: string
+    issuer: string
+    year: string
+  }>
+}
+
+export interface TechStackData {
+  sectionNumber: string
+  title: string
+  items: Array<{
+    name: string
+    category?: string
+  }>
+}
+
+export interface TimelineData {
+  sectionNumber: string
+  title: string
+  milestones: Array<{
+    date: string
+    title: string
+    description: string
   }>
 }

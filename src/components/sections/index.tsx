@@ -10,6 +10,11 @@ import { ProcessSection } from './ProcessSection'
 import { TypographySection } from './TypographySection'
 import { UXFlowSection } from './UXFlowSection'
 import { ResultsSection } from './ResultsSection'
+import { TestimonialSection } from './TestimonialSection'
+import { TeamSection } from './TeamSection'
+import { AwardsSection } from './AwardsSection'
+import { TechStackSection } from './TechStackSection'
+import { TimelineSection } from './TimelineSection'
 
 interface SectionRendererProps {
   section: Section
@@ -56,6 +61,21 @@ export function SectionRenderer({ section, isEditing, onClick }: SectionRenderer
       break
     case 'results':
       inner = <ResultsSection section={section} isEditing={isEditing} onClick={onClick} />
+      break
+    case 'testimonial':
+      inner = <TestimonialSection section={section} isEditing={isEditing} onClick={onClick} />
+      break
+    case 'team':
+      inner = <TeamSection section={section} isEditing={isEditing} onClick={onClick} />
+      break
+    case 'awards':
+      inner = <AwardsSection section={section} isEditing={isEditing} onClick={onClick} />
+      break
+    case 'tech-stack':
+      inner = <TechStackSection section={section} isEditing={isEditing} onClick={onClick} />
+      break
+    case 'timeline':
+      inner = <TimelineSection section={section} isEditing={isEditing} onClick={onClick} />
       break
     default:
       inner = (

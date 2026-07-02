@@ -17,8 +17,9 @@ import {
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { useProjectStore } from '../../lib/store/projectStore'
-import type { Section, SectionType } from '../../lib/types/project.types'
-import { Eye, EyeOff, Trash2, GripVertical, Plus, Copy } from 'lucide-react'
+import type { Section } from '../../lib/types/project.types'
+import { SECTION_MANIFEST } from '../../lib/sections/manifest'
+import { Eye, EyeOff, Trash2, GripVertical, Copy } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 // Sortable Item Component
@@ -170,18 +171,11 @@ export function SectionList() {
     }
   }
 
-  const sectionTypes: Array<{ type: SectionType; label: string }> = [
-    { type: 'cover', label: t('sections.cover') },
-    { type: 'overview', label: t('sections.overview') },
-    { type: 'problem', label: t('sections.problem') },
-    { type: 'process', label: t('sections.process') },
-    { type: 'color-palette', label: t('sections.color-palette') },
-    { type: 'typography', label: t('sections.typography') },
-    { type: 'mockups', label: t('sections.mockups') },
-    { type: 'ux-flow', label: t('sections.ux-flow') },
-    { type: 'results', label: t('sections.results') },
-    { type: 'footer', label: t('sections.footer') },
-  ]
+  const sectionTypes = SECTION_MANIFEST.map((entry) => ({
+    type: entry.type,
+    label: t(entry.labelKey),
+    icon: entry.icon,
+  }))
 
   return (
     <aside className="w-full lg:w-80 bg-[#13131a] border-r border-white/5 flex flex-col h-full z-20 shrink-0">
@@ -238,16 +232,19 @@ export function SectionList() {
           {t('sidebar.addSection')}
         </h3>
         <div className="grid grid-cols-2 gap-2 h-44 overflow-y-auto pr-1">
-          {sectionTypes.map((item) => (
-            <button
-              key={item.type}
-              onClick={() => addSection(item.type)}
-              className="flex items-center gap-1.5 p-2 bg-[#13131a] border border-white/5 hover:border-violet-500/30 rounded-lg text-left text-xs text-zinc-400 hover:text-white transition-all group"
-            >
-              <Plus size={12} className="text-violet-500 group-hover:scale-125 transition-transform" />
-              <span className="truncate">{item.label}</span>
-            </button>
-          ))}
+          {sectionTypes.map((item) => {
+            const Icon = item.icon
+            return (
+              <button
+                key={item.type}
+                onClick={() => addSection(item.type)}
+                className="flex items-center gap-1.5 p-2 bg-[#13131a] border border-white/5 hover:border-violet-500/30 rounded-lg text-left text-xs text-zinc-400 hover:text-white transition-all group"
+              >
+                <Icon size={12} className="text-violet-500 group-hover:scale-125 transition-transform shrink-0" />
+                <span className="truncate">{item.label}</span>
+              </button>
+            )
+          })}
         </div>
       </div>
     </aside>

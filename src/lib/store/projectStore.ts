@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import type { Project, Section, ThemeId, SectionType, ThemeTokens } from '../types/project.types'
 import { defaultSections } from '../templates/defaultSections'
 import { applyTheme } from '../themes'
+import { getSectionManifestEntry } from '../sections/manifest'
 import i18n from '../i18n'
 
 interface ProjectState {
@@ -36,6 +37,8 @@ interface ProjectState {
   selectProject: (id: string) => void
   updateProjectTitle: (title: string) => void
   importProject: (project: Project) => void
+  addComment: (sectionId: string, author: string, text: string) => void
+  deleteComment: (commentId: string) => void
 }
 
 const createInitialProject = (id = 'default-project', title = 'Mi Case Study de Behance', theme: ThemeId = 'dark-editorial'): Project => {
@@ -245,111 +248,15 @@ export const useProjectStore = create<ProjectState>((set, get) => {
       const { project } = get()
       const historyUpdate = saveToHistory(project)
 
-      let defaultData: any = {}
-      let defaultStyle: any = {
+      const manifestEntry = getSectionManifestEntry(type)
+      const defaultData: any = manifestEntry ? manifestEntry.defaultData() : {}
+      const defaultStyle: any = {
         background: 'var(--bg)',
         textColor: 'var(--text)',
         accentColor: 'var(--accent)',
         padding: '100px 80px',
         width: '1600px',
-      }
-
-      switch (type) {
-        case 'cover':
-          defaultData = {
-            eyebrow: i18n.t('defaults.cover.eyebrow', { defaultValue: 'UI/UX CASE STUDY' }),
-            title: i18n.t('defaults.cover.title', { defaultValue: 'Nuevo Case Study' }),
-            subtitle: i18n.t('defaults.cover.subtitle', { defaultValue: 'Descripción breve de este increíble proyecto.' }),
-            titleSize: 'xl',
-            layout: 'left',
-            decorElements: false,
-          }
-          defaultStyle.background = 'var(--bg-section)'
-          break
-        case 'overview':
-          defaultData = {
-            sectionNumber: '01',
-            title: i18n.t('defaults.overview.title', { defaultValue: 'Overview' }),
-            contextText: i18n.t('defaults.overview.contextText', { defaultValue: 'Escribe aquí un resumen del proyecto, objetivos y contexto general.' }),
-            metrics: [
-              { label: i18n.t('defaults.overview.roleLabel', { defaultValue: 'Rol' }), value: i18n.t('defaults.overview.roleValue', { defaultValue: 'Diseñador' }) },
-              { label: i18n.t('defaults.overview.durationLabel', { defaultValue: 'Duración' }), value: i18n.t('defaults.overview.durationValue', { defaultValue: '1 Mes' }) }
-            ]
-          }
-          break
-        case 'problem':
-          defaultData = {
-            sectionNumber: '02',
-            title: i18n.t('defaults.problem.title', { defaultValue: 'El Problema' }),
-            description: i18n.t('defaults.problem.description', { defaultValue: 'Explica los puntos de dolor detectados y qué intentas resolver.' }),
-            image: '',
-            layout: 'right-image'
-          }
-          break
-        case 'process':
-          defaultData = {
-            sectionNumber: '03',
-            title: i18n.t('defaults.process.title', { defaultValue: 'El Proceso' }),
-            steps: [
-              { title: i18n.t('defaults.process.step1Title', { defaultValue: 'Investigación' }), description: i18n.t('defaults.process.step1Desc', { defaultValue: 'User interviews y benchmarking' }), icon: 'Search' },
-              { title: i18n.t('defaults.process.step2Title', { defaultValue: 'Definición' }), description: i18n.t('defaults.process.step2Desc', { defaultValue: 'User personas e insights' }), icon: 'Target' },
-              { title: i18n.t('defaults.process.step3Title', { defaultValue: 'Wireframes' }), description: i18n.t('defaults.process.step3Desc', { defaultValue: 'Estructuración y flujos' }), icon: 'Layers' }
-            ]
-          }
-          break
-        case 'color-palette':
-          defaultData = {
-            sectionNumber: '04',
-            title: i18n.t('defaults.colorPalette.title', { defaultValue: 'Paleta de Colores' }),
-            colors: [
-              { name: i18n.t('defaults.colorPalette.color1Name', { defaultValue: 'Negro' }), hex: '#000000', role: i18n.t('defaults.colorPalette.color1Role', { defaultValue: 'Fondos y texto' }) },
-              { name: i18n.t('defaults.colorPalette.color2Name', { defaultValue: 'Acento' }), hex: '#aa3bff', role: i18n.t('defaults.colorPalette.color2Role', { defaultValue: 'CTAs y foco' }) }
-            ],
-            layout: 'grid'
-          }
-          break
-        case 'typography':
-          defaultData = {
-            sectionNumber: '05',
-            title: i18n.t('defaults.typography.title', { defaultValue: 'Tipografías' }),
-            fonts: [
-              { name: 'Inter', sample: 'Aa Bb Cc Dd Ee Ff 123', role: i18n.t('defaults.typography.fontRole', { defaultValue: 'Display y Cuerpo' }) }
-            ]
-          }
-          break
-        case 'mockups':
-          defaultData = {
-            sectionNumber: '06',
-            title: i18n.t('defaults.mockups.title', { defaultValue: 'Visual Mockups' }),
-            description: i18n.t('defaults.mockups.description', { defaultValue: 'Pantallas y componentes en alta definición.' }),
-            mockups: [],
-            layout: 'grid-2'
-          }
-          break
-        case 'ux-flow':
-          defaultData = {
-            sectionNumber: '07',
-            title: i18n.t('defaults.uxFlow.title', { defaultValue: 'Flujo del Usuario' }),
-            description: i18n.t('defaults.uxFlow.description', { defaultValue: 'Diagrama de interacciones principales.' }),
-            image: ''
-          }
-          break
-        case 'results':
-          defaultData = {
-            sectionNumber: '08',
-            title: i18n.t('defaults.results.title', { defaultValue: 'Resultados y Métricas' }),
-            description: i18n.t('defaults.results.description', { defaultValue: 'Cómo mejoró el producto tras la implementación.' }),
-            metrics: [{ label: i18n.t('defaults.results.metricLabel', { defaultValue: 'Conversión' }), value: '+15%' }]
-          }
-          break
-        case 'footer':
-          defaultData = {
-            authorName: i18n.t('defaults.footer.authorName', { defaultValue: 'Tu Nombre' }),
-            authorRole: i18n.t('defaults.footer.authorRole', { defaultValue: 'Diseñador UI/UX' }),
-            year: new Date().getFullYear().toString(),
-            socialLinks: []
-          }
-          break
+        ...(manifestEntry?.defaultStyle ? manifestEntry.defaultStyle() : {}),
       }
 
       const newSection: Section = {
@@ -616,6 +523,39 @@ export const useProjectStore = create<ProjectState>((set, get) => {
         activeSectionId: null,
         past: [],
         future: [],
+      })
+    },
+
+    addComment: (sectionId, author, text) => {
+      const { project } = get()
+      const newComment = {
+        id: `comment-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
+        sectionId,
+        author,
+        text,
+        createdAt: new Date().toISOString()
+      }
+      const updatedProject = {
+        ...project,
+        comments: [...(project.comments || []), newComment],
+        updatedAt: new Date().toISOString()
+      }
+      set({
+        project: updatedProject,
+        ...syncProjectsList(updatedProject)
+      })
+    },
+
+    deleteComment: (commentId) => {
+      const { project } = get()
+      const updatedProject = {
+        ...project,
+        comments: (project.comments || []).filter((c: any) => c.id !== commentId),
+        updatedAt: new Date().toISOString()
+      }
+      set({
+        project: updatedProject,
+        ...syncProjectsList(updatedProject)
       })
     },
   }
