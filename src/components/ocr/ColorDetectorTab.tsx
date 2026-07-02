@@ -1,8 +1,8 @@
-import { useState, useRef } from 'react'
-import { Palette, Globe, Upload, Check, AlertTriangle, ArrowRight, Loader } from 'lucide-react'
+import { useState, useRef, useEffect } from 'react'
+import { Palette, Globe, Upload, Check, AlertTriangle, ArrowRight, Loader, Pipette, X } from 'lucide-react'
 import { useProjectStore } from '../../lib/store/projectStore'
 import { useToast } from '../shared/ToastProvider'
-import { detectColorsFromImage, getLuminance, contrastRatio } from '../../lib/utils/colorDetector'
+import { detectColorsFromImage, getLuminance, contrastRatio, hexToRgb, rgbToHex } from '../../lib/utils/colorDetector'
 import type { DetectedColor } from '../../lib/utils/colorDetector'
 
 interface Props {
@@ -20,9 +20,32 @@ export function ColorDetectorTab({ sectionId, onClose }: Props) {
   const [colors, setColors] = useState<DetectedColor[]>([])
   const [previewSrc, setPreviewSrc] = useState<string | null>(null)
 
+  // Interactive picker states
+  const [selectedColorSlot, setSelectedColorSlot] = useState<number | null>(null)
+  const [hoverColor, setHoverColor] = useState<string | null>(null)
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+
   // Drag and drop state
   const [isDragOver, setIsDragOver] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  // Draw preview to canvas when source or colors update
+  useEffect(() => {
+    if (!previewSrc || colors.length === 0) return
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+
+    const img = new Image()
+    img.crossOrigin = 'anonymous'
+    img.onload = () => {
+      canvas.width = img.width
+      canvas.height = img.height
+      ctx.drawImage(img, 0, 0)
+    }
+    img.src = previewSrc
+  }, [previewSrc, colors])
 
   const handleProcessImage = async (source: File | string) => {
     setLoading(true)
@@ -121,6 +144,90 @@ export function ColorDetectorTab({ sectionId, onClose }: Props) {
     const file = e.dataTransfer.files?.[0]
     if (file) {
       handleProcessImage(file)
+    }
+  }
+
+  // System Eyedropper API
+  const handleSystemEyeDropper = async (index: number) => {
+    if (!('EyeDropper' in window)) {
+      toast.error('Tu navegador no soporta el gotero del sistema. Haz clic directamente en la imagen de vista previa.')
+      return
+    }
+    try {
+      const eyeDropper = new (window as any).EyeDropper()
+      const result = await eyeDropper.open()
+      const pickedHex = result.sRGBHex
+      const rgb = hexToRgb(pickedHex)
+
+      setColors(prev => {
+        const updated = [...prev]
+        if (updated[index]) {
+          updated[index] = {
+            ...updated[index],
+            hex: pickedHex,
+            rgb
+          }
+        }
+        return updated
+      })
+      toast.success(`Color actualizado a ${pickedHex}`)
+    } catch (err) {
+      // Cancelled or failed
+    }
+  }
+
+  // Canvas interactive picker handlers
+  const handleCanvasClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    if (selectedColorSlot === null) return
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+
+    const rect = canvas.getBoundingClientRect()
+    const x = Math.floor(((e.clientX - rect.left) / rect.width) * canvas.width)
+    const y = Math.floor(((e.clientY - rect.top) / rect.height) * canvas.height)
+
+    try {
+      const pixel = ctx.getImageData(x, y, 1, 1).data
+      const hex = rgbToHex(pixel[0], pixel[1], pixel[2])
+      const rgb = { r: pixel[0], g: pixel[1], b: pixel[2] }
+
+      setColors(prev => {
+        const updated = [...prev]
+        if (updated[selectedColorSlot]) {
+          updated[selectedColorSlot] = {
+            ...updated[selectedColorSlot],
+            hex,
+            rgb
+          }
+        }
+        return updated
+      })
+      toast.success(`Color capturado: ${hex}`)
+      setSelectedColorSlot(null)
+    } catch (err) {
+      toast.error('No se pudo extraer el color. Intenta arrastrar la imagen en vez de usar URL externa (restricciones CORS).')
+    }
+  }
+
+  const handleCanvasMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    if (selectedColorSlot === null) return
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+
+    const rect = canvas.getBoundingClientRect()
+    const x = Math.floor(((e.clientX - rect.left) / rect.width) * canvas.width)
+    const y = Math.floor(((e.clientY - rect.top) / rect.height) * canvas.height)
+
+    try {
+      const pixel = ctx.getImageData(x, y, 1, 1).data
+      const hex = rgbToHex(pixel[0], pixel[1], pixel[2])
+      setHoverColor(hex)
+    } catch (err) {
+      // Ignore CORS restrictions on hover
     }
   }
 
@@ -283,22 +390,75 @@ export function ColorDetectorTab({ sectionId, onClose }: Props) {
 
       {colors.length > 0 && !loading && (
         <div className="space-y-6">
+          {/* Magnifying Glass Indicator when slot selected */}
+          {selectedColorSlot !== null && (
+            <div className="p-3 bg-violet-500/15 border border-violet-500/20 rounded-xl flex items-center justify-between text-xs text-violet-300">
+              <div className="flex items-center gap-2">
+                <Pipette size={14} className="animate-bounce" />
+                <span>
+                  Haz clic en cualquier píxel de la imagen izquierda para actualizar el color de rol{' '}
+                  <strong className="uppercase font-mono text-white">
+                    {colors[selectedColorSlot].role === 'primary'
+                      ? 'Primario'
+                      : colors[selectedColorSlot].role === 'secondary'
+                      ? 'Secundario'
+                      : colors[selectedColorSlot].role === 'tertiary'
+                      ? 'Terciario'
+                      : 'Texto'}
+                  </strong>
+                </span>
+              </div>
+              <button
+                onClick={() => {
+                  setSelectedColorSlot(null)
+                  setHoverColor(null)
+                }}
+                className="p-1 hover:bg-white/10 rounded text-zinc-400 hover:text-white"
+              >
+                <X size={14} />
+              </button>
+            </div>
+          )}
+
           {/* Main layout: preview + colors */}
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
-            {/* Left Preview */}
-            <div className="md:col-span-5 border border-white/5 rounded-xl overflow-hidden bg-zinc-950/60 aspect-[4/3] flex items-center justify-center p-2">
-              <img src={previewSrc!} alt="Preview" className="max-h-full max-w-full object-contain rounded" />
+            {/* Left Preview Canvas */}
+            <div className="md:col-span-5 border border-white/5 rounded-xl overflow-hidden bg-zinc-950/60 aspect-[4/3] flex flex-col items-center justify-center p-2 relative">
+              <canvas
+                ref={canvasRef}
+                onClick={handleCanvasClick}
+                onMouseMove={handleCanvasMouseMove}
+                onMouseLeave={() => setHoverColor(null)}
+                className={`max-h-full max-w-full object-contain rounded border border-white/5 ${
+                  selectedColorSlot !== null ? 'cursor-crosshair' : 'cursor-default'
+                }`}
+              />
+              
+              {/* Hover Color Badge */}
+              {hoverColor && selectedColorSlot !== null && (
+                <div className="absolute bottom-4 left-4 bg-zinc-950/90 border border-white/15 px-2.5 py-1 rounded-lg flex items-center gap-2 pointer-events-none shadow-xl">
+                  <div className="w-3.5 h-3.5 rounded border border-white/20" style={{ backgroundColor: hoverColor }} />
+                  <span className="font-mono text-[10px] font-bold text-white uppercase">{hoverColor}</span>
+                </div>
+              )}
             </div>
 
             {/* Right Color List */}
             <div className="md:col-span-7 space-y-4">
               <div className="text-[10px] font-mono font-bold tracking-wider text-zinc-500 uppercase">
-                Colores Detectados (Top 4)
+                Colores Detectados (Haz clic en un gotero para refinar)
               </div>
 
               <div className="grid grid-cols-1 gap-2">
                 {colors.map((c, i) => (
-                  <div key={i} className="flex items-center justify-between p-3 bg-zinc-900/50 border border-white/5 rounded-xl">
+                  <div
+                    key={i}
+                    className={`flex items-center justify-between p-3 border rounded-xl transition-all ${
+                      selectedColorSlot === i
+                        ? 'bg-violet-950/20 border-violet-500'
+                        : 'bg-zinc-900/50 border-white/5 hover:border-white/10'
+                    }`}
+                  >
                     <div className="flex items-center gap-3">
                       <div
                         className="w-10 h-10 rounded-lg border border-white/10 shadow-inner shrink-0"
@@ -317,9 +477,35 @@ export function ColorDetectorTab({ sectionId, onClose }: Props) {
                       </div>
                     </div>
                     
-                    <span className="font-mono font-bold text-xs text-violet-400">
-                      {c.percentage}%
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono font-bold text-xs text-zinc-400 mr-2">
+                        {c.percentage}%
+                      </span>
+                      
+                      {/* Pick on Canvas Button */}
+                      <button
+                        onClick={() => setSelectedColorSlot(selectedColorSlot === i ? null : i)}
+                        className={`p-1.5 rounded-lg border transition-all ${
+                          selectedColorSlot === i
+                            ? 'bg-violet-600 border-violet-500 text-white'
+                            : 'bg-zinc-950/40 border-white/5 text-zinc-400 hover:text-white hover:border-white/10'
+                        }`}
+                        title="Capturar color haciendo clic en la imagen"
+                      >
+                        <Pipette size={13} />
+                      </button>
+
+                      {/* Native EyeDropper Button (if supported) */}
+                      {'EyeDropper' in window && (
+                        <button
+                          onClick={() => handleSystemEyeDropper(i)}
+                          className="p-1.5 bg-zinc-950/40 border border-white/5 text-zinc-400 hover:text-white hover:border-white/10 rounded-lg transition-all"
+                          title="Usar el gotero del sistema operativo"
+                        >
+                          <span className="text-[9px] font-mono font-bold">Gotero</span>
+                        </button>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -354,6 +540,8 @@ export function ColorDetectorTab({ sectionId, onClose }: Props) {
                 setPreviewSrc(null)
                 setColors([])
                 setImageUrl('')
+                setSelectedColorSlot(null)
+                setHoverColor(null)
               }}
               className="px-3 py-1.5 border border-white/10 hover:border-white/20 hover:bg-white/5 rounded-lg text-zinc-400 hover:text-white text-xs font-semibold transition-all cursor-pointer"
             >
