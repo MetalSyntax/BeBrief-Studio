@@ -107,3 +107,13 @@ body {
     text-shadow: none !important;
   }
 }
+
+/* contenteditable placeholder style */
+[contenteditable][data-placeholder]:empty::before {
+  content: attr(data-placeholder);
+  color: currentColor;
+  opacity: 0.35;
+  cursor: text;
+  display: inline-block;
+}
+

@@ -7,6 +7,18 @@ export type ThemeId =
   | 'ocean-tech'
   | 'rose-editorial'
   | 'forest-sage'
+  | 'cyberpunk'
+  | 'nordic-cold'
+  | 'dracula'
+  | 'charcoal-mono'
+  | 'flat-design-light'
+  | 'nordic-light'
+  | 'lavender-mist'
+  | 'cyber-light'
+  | 'mint-fresh'
+  | 'solarized-light'
+  | 'sand-dune'
+  | 'brutalist-light'
   | 'custom'
 
 export interface ThemeTokens {
@@ -79,6 +91,7 @@ export interface CoverData {
   titleSize: 'xl' | 'xxl' | 'display'
   layout: 'left' | 'centered'
   decorElements: boolean
+  decorType?: 'glow' | 'grid' | 'dots' | 'brutalist-star' | 'retro-shape' | 'abstract-wave' | 'isometric-cube' | 'crosses' | 'stripes' | 'noise-overlay'
   pageCounter?: string
 }
 
@@ -139,8 +152,9 @@ export interface MockupsData {
     image: string
     alt: string
     deviceFrame: 'phone' | 'tablet' | 'browser' | 'none'
+    scrollOffset?: number
   }>
-  layout: 'grid-2' | 'grid-3' | 'scattered' | 'centered-large'
+  layout: 'grid-2' | 'grid-3' | 'grid-4' | 'scattered' | 'centered-large'
 }
 
 export interface UXFlowData {

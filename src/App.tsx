@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Toolbar } from './components/editor/Toolbar'
 import { SectionList } from './components/editor/SectionList'
 import { EditorCanvas } from './components/editor/EditorCanvas'
@@ -14,12 +14,19 @@ import { save } from '@tauri-apps/plugin-dialog'
 import { writeTextFile, writeFile } from '@tauri-apps/plugin-fs'
 
 function App() {
-  const { project, view, previewMode } = useProjectStore()
+  const { project, view, previewMode, activeSectionId } = useProjectStore()
   const toast = useToast()
   const { t, i18n } = useTranslation()
   useKeyboardShortcuts()
 
   const [activeMobileTab, setActiveMobileTab] = useState<'canvas' | 'sections' | 'inspector'>('canvas')
+
+  // Auto-switch to properties inspector when a section is clicked/selected
+  useEffect(() => {
+    if (activeSectionId) {
+      setActiveMobileTab('inspector')
+    }
+  }, [activeSectionId])
 
   if (view === 'dashboard') {
     return <Dashboard />

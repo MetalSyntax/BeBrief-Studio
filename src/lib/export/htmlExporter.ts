@@ -31,6 +31,74 @@ export function exportProjectToHTML(project: Project, lang = 'en'): string {
     .filter(s => s.visible)
     .sort((a, b) => a.order - b.order)
 
+  const getDecorElementsHtml = (decorElements: boolean, decorType?: string, theme?: string) => {
+    if (!decorElements) return ''
+    const type = decorType || (
+      theme === 'brutalist-light' || theme === 'flat-design-light' ? 'brutalist-star' :
+      theme === 'cyberpunk' || theme === 'neon-noir' ? 'grid' :
+      theme === 'minimal' || theme === 'charcoal-mono' ? 'crosses' : 'glow'
+    )
+
+    switch (type) {
+      case 'grid':
+        return `
+        <div style="position: absolute; inset: 0; pointer-events: none; opacity: 0.15; overflow: hidden; z-index: 1;">
+          <div style="position: absolute; inset: 0; background: linear-gradient(to right, rgba(255,255,255,0.08) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.08) 1px, transparent 1px); background-size: 40px 40px; transform: perspective(500px) rotateX(60deg) scale(2) translateY(-20%); transform-origin: top center;"></div>
+        </div>`
+      case 'dots':
+        return `<div style="position: absolute; right: 40px; top: 50%; transform: translateY(-50%); width: 320px; height: 320px; background: radial-gradient(var(--accent) 15%, transparent 16%); background-size: 24px 24px; opacity: 0.15; pointer-events: none; display: block; z-index: 1;"></div>`
+      case 'brutalist-star':
+        return `
+        <div style="position: absolute; right: 96px; top: 50%; transform: translateY(-50%); width: 192px; height: 192px; pointer-events: none; filter: drop-shadow(6px 6px 0px rgba(0,0,0,0.8)); z-index: 1;">
+          <svg viewBox="0 0 100 100" fill="var(--accent)" stroke="black" stroke-width="2.5" style="width: 100%; height: 100%;">
+            <path d="M50 0 L55 35 L90 35 L60 55 L70 90 L50 70 L30 90 L40 55 L10 35 L45 35 Z" />
+          </svg>
+        </div>`
+      case 'retro-shape':
+        return `
+        <div style="position: absolute; right: 64px; top: 50%; transform: translateY(-50%) scale(0.75); width: 256px; height: 256px; pointer-events: none; z-index: 1;">
+          <div style="position: absolute; width: 160px; height: 160px; border-radius: 50%; border: 4px solid black; background: #f1c40f; transform: rotate(12deg); box-shadow: 6px 6px 0px #000000; top: -16px; left: -16px;"></div>
+          <div style="position: absolute; width: 160px; height: 160px; border: 4px solid black; background: #3498db; transform: rotate(-12deg); box-shadow: 6px 6px 0px #000000; top: 48px; left: 64px;"></div>
+          <div style="position: absolute; width: 0; height: 0; border-left: 60px solid transparent; border-right: 60px solid transparent; border-bottom: 100px solid #e74c3c; filter: drop-shadow(4px 4px 0px #000000); top: 16px; left: 40px;"></div>
+        </div>`
+      case 'abstract-wave':
+        return `
+        <div style="position: absolute; right: 0; top: 0; bottom: 0; width: 33%; opacity: 0.25; pointer-events: none; overflow: hidden; z-index: 1;">
+          <svg viewBox="0 0 100 100" style="width: 100%; height: 100%; stroke: var(--accent); fill: none; stroke-width: 1px;">
+            <path d="M0,10 Q20,30 40,10 T80,10 T120,30" />
+            <path d="M0,25 Q25,45 50,25 T100,25 T150,45" />
+            <path d="M0,40 Q30,60 60,40 T120,40 T180,60" />
+            <path d="M0,55 Q35,75 70,55 T140,55 T210,75" />
+            <path d="M0,70 Q40,90 80,70 T160,70 T240,90" />
+          </svg>
+        </div>`
+      case 'isometric-cube':
+        return `
+        <div style="position: absolute; right: 112px; top: 50%; transform: translateY(-50%); width: 192px; height: 192px; pointer-events: none; opacity: 0.4; z-index: 1;">
+          <svg viewBox="0 0 120 120" fill="none" stroke="var(--accent)" stroke-width="1.5" style="width: 100%; height: 100%;">
+            <polygon points="60,20 100,40 100,80 60,100 20,80 20,40" />
+            <line x1="60" y1="20" x2="60" y2="100" />
+            <line x1="20" y1="40" x2="60" y2="60" />
+            <line x1="100" y1="40" x2="60" y2="60" />
+          </svg>
+        </div>`
+      case 'crosses':
+        return `
+        <div style="position: absolute; right: 48px; top: 50%; transform: translateY(-50%); width: 256px; height: 256px; pointer-events: none; opacity: 0.2; z-index: 1;">
+          <div style="width: 100%; height: 100%; display: grid; grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(6, 1fr); text-align: center; color: #7f7f7f; font-family: monospace; font-size: 10px;">
+            ${Array.from({ length: 36 }).map(() => '<div>+</div>').join('')}
+          </div>
+        </div>`
+      case 'stripes':
+        return `<div style="position: absolute; right: 0; top: 0; bottom: 0; width: 192px; background: repeating-linear-gradient(45deg,transparent,transparent 15px,var(--accent) 15px,var(--accent) 18px); opacity: 0.1; pointer-events: none; z-index: 1;"></div>`
+      case 'noise-overlay':
+        return `<div style="position: absolute; inset: 0; background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noise%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.8%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noise)%22/%3E%3C/svg%3E'); opacity: 0.02; pointer-events: none; z-index: 1;"></div>`
+      case 'glow':
+      default:
+        return `<div class="decor-blob"></div>`
+    }
+  }
+
   const renderedSections = sortedSections.map((section) => {
     const { type, data, style } = section
     const fontOverride = style.displayFont && style.displayFont !== 'default'
@@ -42,8 +110,8 @@ export function exportProjectToHTML(project: Project, lang = 'en'): string {
       case 'cover':
         return `
         <div class="section-container" ${secStyleAttr}>
-          ${data.decorElements ? '<div class="decor-blob"></div>' : ''}
-          <div class="section-content ${data.layout === 'centered' ? 'text-center items-center' : 'text-left items-start'}">
+          ${getDecorElementsHtml(data.decorElements, data.decorType, project.theme)}
+          <div class="section-content ${data.layout === 'centered' ? 'text-center items-center' : 'text-left items-start'}" style="position: relative; z-index: 2;">
             ${data.pageCounter ? `<div class="page-counter">${data.pageCounter}</div>` : ''}
             <span class="eyebrow">${data.eyebrow}</span>
             <h1 class="title font-display ${data.titleSize === 'display' ? 'text-xl' : data.titleSize === 'xxl' ? 'text-lg' : 'text-md'}">${data.title.replace(/\n/g, '<br>')}</h1>
@@ -95,7 +163,7 @@ export function exportProjectToHTML(project: Project, lang = 'en'): string {
         </div>`
         
       case 'mockups':
-        const gridClass = data.layout === 'grid-3' ? 'grid-3' : data.layout === 'centered-large' ? 'centered-large' : data.layout === 'scattered' ? 'scattered' : 'grid-2'
+        const gridClass = data.layout === 'grid-3' ? 'grid-3' : data.layout === 'grid-4' ? 'grid-4' : data.layout === 'centered-large' ? 'centered-large' : data.layout === 'scattered' ? 'scattered' : 'grid-2'
         return `
         <div class="section-container" ${secStyleAttr}>
           <div class="section-content">
@@ -106,15 +174,18 @@ export function exportProjectToHTML(project: Project, lang = 'en'): string {
             ${data.description ? `<p class="section-desc font-body">${data.description}</p>` : ''}
             <div class="mockups-container ${gridClass}">
               ${(data.mockups || []).map((mock: any, idx: number) => `
-                <div class="mockup-item device-${mock.deviceFrame}">
-                  ${mock.image 
-                    ? `<img src="${mock.image}" alt="${mock.alt || ''}">` 
-                    : `
-                    <div class="mockup-placeholder">
-                      <div class="device-frame-outline"></div>
-                      <span>${mock.alt || `Mockup ${idx + 1}`}</span>
-                    </div>`
-                  }
+                <div class="mockup-item device-${mock.deviceFrame}" style="display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 12px; height: 100%;">
+                  <div style="flex: 1; width: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; min-height: 0; position: relative;">
+                    ${mock.image 
+                      ? `<img src="${mock.image}" alt="${mock.alt || ''}" style="max-height: 100%; max-width: 100%; object-fit: contain;">` 
+                      : `
+                      <div class="mockup-placeholder">
+                        <div class="device-frame-outline"></div>
+                        <span>${mock.alt || `Mockup ${idx + 1}`}</span>
+                      </div>`
+                    }
+                  </div>
+                  ${mock.caption ? `<div class="mockup-caption" style="font-size: 11px; opacity: 0.6; font-weight: 500; font-family: var(--font-body); text-align: center; width: 100%; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 8px; margin-top: auto;">${mock.caption}</div>` : ''}
                 </div>
               `).join('')}
             </div>
@@ -522,6 +593,7 @@ ${cssVariables}
 
     .mockups-container.grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .mockups-container.grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .mockups-container.grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
     .mockups-container.scattered {
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 48px;

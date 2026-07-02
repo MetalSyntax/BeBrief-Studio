@@ -14,7 +14,8 @@ module.exports = {
         resolveJsonModule: true,
         target: 'es2022',
         lib: ['es2022', 'dom'],
-        types: ['jest', 'node']
+        types: ['jest', 'node'],
+        jsx: 'react-jsx'
       }
     }],
   },

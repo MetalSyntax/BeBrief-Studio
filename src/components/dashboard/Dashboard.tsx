@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { useProjectStore } from '../../lib/store/projectStore'
 import { downloadProjectJSON, parseProjectFromJSON } from '../../lib/export/jsonPortability'
 import { useToast } from '../shared/ToastProvider'
@@ -37,6 +37,8 @@ export function Dashboard() {
     e.target.value = ''
   }
 
+  const [showAllTemplates, setShowAllTemplates] = useState(false)
+
   const templates = [
     {
       type: 'default' as const,
@@ -58,6 +60,27 @@ export function Dashboard() {
       desc: t('dashboard.minimalDark.desc', { defaultValue: 'Diseño neutro oscuro, ideal para proyectos tecnológicos o de producto.' }),
       themeColor: 'bg-[#18181b] border-blue-500/30',
       badge: t('dashboard.badgeTech', { defaultValue: 'Tech' })
+    },
+    {
+      type: 'brutalist' as const,
+      name: 'Retro Brutalist',
+      desc: 'Marcos negros marcados, contrastes en amarillo y estética punk editorial.',
+      themeColor: 'bg-[#ffff00] border-black/30 text-black',
+      badge: 'Brutalista'
+    },
+    {
+      type: 'cyberpunk' as const,
+      name: 'Cyberpunk Tech',
+      desc: 'Neon y cibergráficos contrastados sobre fondo oscuro puro futurista.',
+      themeColor: 'bg-[#030303] border-cyan-400/35 text-cyan-400',
+      badge: 'Futuro'
+    },
+    {
+      type: 'nordic' as const,
+      name: 'Nordic Studio',
+      desc: 'Diseño limpio y frío inspirado en minimalismo y tipografías escandinavas.',
+      themeColor: 'bg-[#eef2f6] border-slate-300 text-slate-800',
+      badge: 'Nórdico'
     }
   ]
 
@@ -87,7 +110,17 @@ export function Dashboard() {
             className="w-8 h-8 rounded-lg shadow-lg shadow-violet-500/20 object-cover"
           />
           <div>
-            <span className="text-[10px] text-zinc-500 font-mono tracking-wider uppercase block">BeBrief Studio</span>
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-[10px] text-zinc-500 font-mono tracking-wider uppercase block">BeBrief Studio</span>
+              <a 
+                href="https://metalsyntax.vercel.app/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-[8px] bg-violet-500/10 border border-violet-500/20 text-violet-400 hover:bg-violet-600 hover:text-white px-1.5 py-0.5 rounded font-mono font-bold leading-none block transition-colors"
+              >
+                BY METALSYNTAX
+              </a>
+            </div>
             <h1 className="text-sm font-semibold text-white tracking-tight leading-none m-0 p-0">
               {t('dashboard.savedProjects', { defaultValue: 'Proyectos Guardados' })}
             </h1>
@@ -122,13 +155,21 @@ export function Dashboard() {
 
         {/* Templates Area */}
         <section className="space-y-4">
-          <div className="flex items-center gap-2 text-violet-400 text-xs font-mono font-bold tracking-wider uppercase">
-            <Sparkles size={14} />
-            <span>{t('dashboard.createFromTemplate', { defaultValue: 'Crear desde Plantilla' })}</span>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-violet-400 text-xs font-mono font-bold tracking-wider uppercase">
+              <Sparkles size={14} />
+              <span>{t('dashboard.createFromTemplate', { defaultValue: 'Crear desde Plantilla' })}</span>
+            </div>
+            <button
+              onClick={() => setShowAllTemplates(!showAllTemplates)}
+              className="text-[10px] font-mono font-bold uppercase text-zinc-400 hover:text-white border border-white/5 hover:border-white/15 bg-zinc-900/40 px-2.5 py-1.5 rounded-lg transition-all cursor-pointer"
+            >
+              {showAllTemplates ? 'Ver menos' : 'Ver más plantillas'}
+            </button>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {templates.map((tpl) => (
+            {templates.slice(0, showAllTemplates ? undefined : 3).map((tpl) => (
               <div
                 key={tpl.name}
                 onClick={() => createNewProject(`${tpl.name} Case Study`, tpl.type)}
@@ -238,9 +279,14 @@ export function Dashboard() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-white/5 py-6 text-center text-xs text-zinc-600 shrink-0" dangerouslySetInnerHTML={{
-        __html: t('dashboard.footer', { defaultValue: 'BeBrief Studio &copy; 2026 · Edición modular y exportación standalone.' })
-      }} />
+      <footer className="border-t border-white/5 py-8 text-center text-xs text-zinc-500 shrink-0 flex flex-col items-center justify-center gap-2">
+        <p>
+          BeBrief Studio &copy; 2026 · Edición modular y exportación standalone.
+        </p>
+        <p className="opacity-80">
+          Creado por <a href="https://metalsyntax.vercel.app/" target="_blank" rel="noopener noreferrer" className="text-violet-400 hover:text-violet-300 underline underline-offset-2 transition-all">metalsyntax</a>
+        </p>
+      </footer>
     </div>
   )
 }

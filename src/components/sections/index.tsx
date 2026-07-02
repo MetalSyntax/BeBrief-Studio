@@ -14,7 +14,7 @@ import { ResultsSection } from './ResultsSection'
 interface SectionRendererProps {
   section: Section
   isEditing: boolean
-  onClick?: () => void
+  onClick?: (e?: any) => void
 }
 
 export function SectionRenderer({ section, isEditing, onClick }: SectionRendererProps) {

@@ -8,10 +8,11 @@ interface EditableTextProps {
   className?: string
   tagName?: 'h1' | 'h2' | 'h3' | 'p' | 'span' | 'div'
   style?: React.CSSProperties
+  placeholder?: string
 }
 
 export function EditableText(props: EditableTextProps) {
-  const { value, onChange, className = '', tagName = 'span', style } = props
+  const { value, onChange, className = '', tagName = 'span', style, placeholder } = props
   const ref = useRef<HTMLElement>(null)
   const { previewMode } = useProjectStore()
 
@@ -19,7 +20,7 @@ export function EditableText(props: EditableTextProps) {
 
   // Sync internal ref HTML only when value changes externally (e.g. undo/redo/theme)
   useEffect(() => {
-    if (ref.current) {
+    if (ref.current && document.activeElement !== ref.current) {
       const currentHTML = ref.current.innerHTML
       if (currentHTML !== value) {
         ref.current.innerHTML = value || ''
@@ -52,7 +53,7 @@ export function EditableText(props: EditableTextProps) {
       suppressContentEditableWarning
       onBlur={handleBlur}
       onKeyDown={handleKeyDown}
-      dangerouslySetInnerHTML={{ __html: value || '' }}
+      data-placeholder={placeholder}
       className={`${className} ${
         isEditable 
           ? 'focus:outline-violet-500 focus:bg-white/5 transition-all p-1 -m-1 rounded cursor-text select-text' 

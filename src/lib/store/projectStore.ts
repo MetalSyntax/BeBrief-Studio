@@ -30,7 +30,7 @@ interface ProjectState {
   redo: () => void
   
   // Multi-project Actions
-  createNewProject: (title?: string, templateType?: 'default' | 'minimal' | 'editorial') => void
+  createNewProject: (title?: string, templateType?: 'default' | 'minimal' | 'editorial' | 'brutalist' | 'cyberpunk' | 'nordic') => void
   deleteProject: (id: string) => void
   duplicateProject: (id: string) => void
   selectProject: (id: string) => void
@@ -504,6 +504,9 @@ export const useProjectStore = create<ProjectState>((set, get) => {
       
       if (templateType === 'minimal') newTheme = 'minimal'
       if (templateType === 'editorial') newTheme = 'clean-light'
+      if (templateType === 'brutalist') newTheme = 'brutalist-light'
+      if (templateType === 'cyberpunk') newTheme = 'cyberpunk'
+      if (templateType === 'nordic') newTheme = 'nordic-cold'
 
       const actualTitle = title || i18n.t('dashboard.newCaseStudyDefaultTitle', { defaultValue: 'Nuevo Case Study' })
       const newProj = createInitialProject(newId, actualTitle, newTheme)

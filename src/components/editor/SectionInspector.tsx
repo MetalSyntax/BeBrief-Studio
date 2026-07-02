@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useProjectStore } from '../../lib/store/projectStore'
-import { THEME_OPTIONS } from '../../lib/themes'
+import { THEME_OPTIONS, themes, applyTheme } from '../../lib/themes'
 import { Info, Trash2, Plus, Eye, EyeOff, ScanText } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { ImageUploader } from '../shared/ImageUploader'
@@ -184,6 +184,44 @@ export function SectionInspector() {
                     />
                   </div>
                 </div>
+
+                {/* Text Muted color */}
+                <div className="space-y-1">
+                  <label className="text-[10px] text-zinc-400 block">Texto Secundario (--text-muted)</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="color"
+                      value={customTheme['--text-muted']?.startsWith('#') ? customTheme['--text-muted'] : '#a1a1aa'}
+                      onChange={(e) => handleCustomThemeUpdate('--text-muted', e.target.value)}
+                      className="w-8 h-8 rounded border border-white/15 bg-transparent p-0 cursor-pointer"
+                    />
+                    <input
+                      type="text"
+                      value={customTheme['--text-muted'] || ''}
+                      onChange={(e) => handleCustomThemeUpdate('--text-muted', e.target.value)}
+                      className="flex-1 bg-zinc-900 border border-white/10 rounded-lg text-xs px-3 py-1.5 text-white font-mono focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                {/* Border color */}
+                <div className="space-y-1">
+                  <label className="text-[10px] text-zinc-400 block">Color de Bordes (--border)</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="color"
+                      value={customTheme['--border']?.startsWith('#') ? customTheme['--border'] : 'rgba(255,255,255,0.08)'}
+                      onChange={(e) => handleCustomThemeUpdate('--border', e.target.value)}
+                      className="w-8 h-8 rounded border border-white/15 bg-transparent p-0 cursor-pointer"
+                    />
+                    <input
+                      type="text"
+                      value={customTheme['--border'] || ''}
+                      onChange={(e) => handleCustomThemeUpdate('--border', e.target.value)}
+                      className="flex-1 bg-zinc-900 border border-white/10 rounded-lg text-xs px-3 py-1.5 text-white font-mono focus:outline-none"
+                    />
+                  </div>
+                </div>
               </div>
 
               {/* Typography & Layout */}
@@ -251,6 +289,50 @@ export function SectionInspector() {
                     dropdownClassName="w-full"
                   />
                 </div>
+              </div>
+
+              {/* Preset loader */}
+              <div className="space-y-2 pt-2 border-t border-white/5">
+                <span className="text-[10px] text-zinc-500 font-mono font-bold tracking-wider uppercase block">Copiar Base de Tema</span>
+                <div className="grid grid-cols-2 gap-1.5 max-h-36 overflow-y-auto pr-1 custom-scrollbar">
+                  {THEME_OPTIONS.filter(o => o.value !== 'custom').map((opt) => (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      onClick={() => {
+                        const baseTheme = themes[opt.value]
+                        if (baseTheme) {
+                          updateCustomTheme(baseTheme)
+                          applyTheme('custom', baseTheme)
+                        }
+                      }}
+                      className="px-2 py-1 bg-zinc-900 border border-white/5 hover:border-violet-500/30 text-[10px] text-zinc-400 hover:text-white rounded text-left truncate transition-all cursor-pointer"
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Import/Export */}
+              <div className="space-y-1.5 pt-2 border-t border-white/5">
+                <span className="text-[10px] text-zinc-500 font-mono font-bold tracking-wider uppercase block">Importar / Exportar JSON</span>
+                <textarea
+                  value={JSON.stringify(customTheme, null, 2)}
+                  onChange={(e) => {
+                    try {
+                      const parsed = JSON.parse(e.target.value)
+                      if (parsed['--bg'] && parsed['--text']) {
+                        updateCustomTheme(parsed)
+                        applyTheme('custom', parsed)
+                      }
+                    } catch (err) {
+                      // ignore parse errors while typing
+                    }
+                  }}
+                  className="w-full h-20 bg-zinc-950 border border-white/10 rounded p-1.5 text-[9px] font-mono text-zinc-400 focus:text-white focus:outline-none custom-scrollbar"
+                  placeholder="Pega el JSON de tu tema aquí..."
+                />
               </div>
             </div>
           ) : (
@@ -352,6 +434,31 @@ export function SectionInspector() {
           className="accent-violet-600 cursor-pointer"
         />
       </div>
+
+      {data.decorElements && (
+        <div>
+          <label className="text-[10px] font-mono font-bold tracking-wider text-zinc-500 block mb-1 uppercase">Estilo de Decoración</label>
+          <CustomSelect
+            value={data.decorType || 'glow'}
+            onChange={(val) => handleDataChange('decorType', val)}
+            options={[
+              { value: 'glow', label: 'Resplandor Ambient (Glow)' },
+              { value: 'grid', label: 'Rejilla Neon (Cyber Grid)' },
+              { value: 'dots', label: 'Puntos Halftone (Dots)' },
+              { value: 'brutalist-star', label: 'Estrella Brutalista' },
+              { value: 'retro-shape', label: 'Geometría Retro/Flat' },
+              { value: 'abstract-wave', label: 'Líneas de Contorno / Ondas' },
+              { value: 'isometric-cube', label: 'Cubo Isométrico 3D' },
+              { value: 'crosses', label: 'Rejilla de Cruces (+)' },
+              { value: 'stripes', label: 'Líneas Diagonales' },
+              { value: 'noise-overlay', label: 'Textura de Ruido Vintage' }
+            ]}
+            className="w-full"
+            triggerClassName="w-full py-2 justify-between bg-zinc-900 text-xs"
+            dropdownClassName="w-full"
+          />
+        </div>
+      )}
 
       <div>
         <label className="text-[10px] font-mono font-bold tracking-wider text-zinc-500 block mb-1 uppercase">{t('inspector.field.pageCounter')}</label>
@@ -638,6 +745,7 @@ export function SectionInspector() {
               options={[
                 { value: 'grid-2', label: '2 Columnas' },
                 { value: 'grid-3', label: '3 Columnas' },
+                { value: 'grid-4', label: '4 Columnas' },
                 { value: 'centered-large', label: 'Centrado Grande' },
                 { value: 'scattered', label: 'Scattered (Disperso)' }
               ]}
@@ -684,7 +792,7 @@ export function SectionInspector() {
                     placeholder="Alt Text"
                     value={mock.alt || ''}
                     onChange={(e) => handleMockupChange(index, 'alt', e.target.value)}
-                    className="bg-zinc-900 border border-white/10 rounded px-2 py-1 text-[11px] text-white"
+                    className="bg-zinc-900 border border-white/10 rounded px-2 py-1 text-[11px] text-white focus:outline-none focus:border-violet-500"
                   />
                   <CustomSelect
                     value={mock.deviceFrame || 'none'}
@@ -698,6 +806,16 @@ export function SectionInspector() {
                     className="w-full"
                     triggerClassName="w-full py-1 justify-between bg-zinc-900 text-[11px]"
                     dropdownClassName="w-full"
+                  />
+                </div>
+
+                <div>
+                  <input
+                    type="text"
+                    placeholder="Título de la vista / Leyenda"
+                    value={mock.caption || ''}
+                    onChange={(e) => handleMockupChange(index, 'caption', e.target.value)}
+                    className="w-full bg-zinc-900 border border-white/10 rounded px-2 py-1 text-[11px] text-white focus:outline-none focus:border-violet-500"
                   />
                 </div>
               </div>
@@ -1462,12 +1580,16 @@ export function SectionInspector() {
               value={section.style.titleSize || 'xl'}
               onChange={(val) => handleStyleChange('titleSize', val)}
               options={[
-                { value: 'sm', label: 'Pequeño (xl)' },
-                { value: 'md', label: 'Mediano (2xl)' },
-                { value: 'lg', label: 'Grande (3xl)' },
-                { value: 'xl', label: 'Muy Grande (4xl/5xl)' },
-                { value: '2xl', label: 'Gigante (6xl)' },
-                { value: 'display', label: 'Display (Gigante)' }
+                { value: 'xs', label: 'Extra Pequeño (xs)' },
+                { value: 'sm', label: 'Pequeño (sm)' },
+                { value: 'md', label: 'Mediano (md)' },
+                { value: 'lg', label: 'Grande (lg)' },
+                { value: 'xl', label: 'Muy Grande (xl)' },
+                { value: '2xl', label: 'Extra Grande (2xl)' },
+                { value: '3xl', label: 'Doble Extra (3xl)' },
+                { value: '4xl', label: 'Mega Grande (4xl)' },
+                { value: '5xl', label: 'Super Grande (5xl)' },
+                { value: 'display', label: 'Display Gigante' }
               ]}
               className="w-full"
               triggerClassName="w-full py-2 justify-between"
@@ -1481,11 +1603,16 @@ export function SectionInspector() {
               value={section.style.subtitleSize || 'lg'}
               onChange={(val) => handleStyleChange('subtitleSize', val)}
               options={[
+                { value: 'xs', label: 'Extra Pequeño (xs)' },
                 { value: 'sm', label: 'Pequeño (sm)' },
-                { value: 'md', label: 'Mediano (base)' },
+                { value: 'md', label: 'Mediano (md)' },
                 { value: 'lg', label: 'Grande (lg)' },
                 { value: 'xl', label: 'Muy Grande (xl)' },
-                { value: '2xl', label: 'Destacado (2xl)' }
+                { value: '2xl', label: 'Extra Grande (2xl)' },
+                { value: '3xl', label: 'Destacado (3xl)' },
+                { value: '4xl', label: 'Grande Banner (4xl)' },
+                { value: '5xl', label: 'Display Pequeño (5xl)' },
+                { value: 'display', label: 'Display Completo' }
               ]}
               className="w-full"
               triggerClassName="w-full py-2 justify-between"

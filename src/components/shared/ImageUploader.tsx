@@ -76,13 +76,37 @@ export function ImageUploader({ value, onChange, label, className = '', withOcr 
     }
   }
 
+  const isImageUrl = (url: string): boolean => {
+    if (url.startsWith('data:image/') || url.startsWith('blob:')) return true
+    const cleanUrl = url.split('?')[0].toLowerCase()
+    return /\.(jpeg|jpg|gif|png|webp|svg|bmp)$/.test(cleanUrl)
+  }
+
   const handleUrlSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (tempUrl.trim()) {
-      onChange(tempUrl.trim())
+      let finalUrl = tempUrl.trim()
+      
+      // If it doesn't look like a direct image URL, prepend protocol if missing
+      if (!isImageUrl(finalUrl)) {
+        if (!/^https?:\/\//i.test(finalUrl)) {
+          finalUrl = 'https://' + finalUrl
+        }
+      }
+
+      onChange(finalUrl)
       setShowUrlInput(false)
       setTempUrl('')
     }
+  }
+
+  const getThumbnailUrl = (url: string) => {
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      if (!isImageUrl(url)) {
+        return `https://api.microlink.io/?url=${encodeURIComponent(url)}&screenshot=true&embed=screenshot.url&viewport.width=200&viewport.height=150`
+      }
+    }
+    return url
   }
 
   return (
@@ -96,7 +120,7 @@ export function ImageUploader({ value, onChange, label, className = '', withOcr 
       {value ? (
         <div className="relative group border border-white/10 rounded-xl bg-zinc-900/50 p-2 overflow-hidden flex items-center gap-3">
           <div className="w-12 h-12 rounded-lg border border-white/10 overflow-hidden bg-black flex items-center justify-center shrink-0">
-            <img src={value} alt="Preview" className="w-full h-full object-cover" />
+            <img src={getThumbnailUrl(value)} alt="Preview" className="w-full h-full object-cover" />
           </div>
           
           <div className="flex-1 min-w-0">
@@ -130,8 +154,8 @@ export function ImageUploader({ value, onChange, label, className = '', withOcr 
           {showUrlInput ? (
             <form onSubmit={handleUrlSubmit} className="flex gap-2">
               <input
-                type="url"
-                placeholder="https://ejemplo.com/imagen.jpg"
+                type="text"
+                placeholder="Pega URL de imagen o sitio web (ej. google.com)"
                 value={tempUrl}
                 onChange={(e) => setTempUrl(e.target.value)}
                 className="flex-1 bg-zinc-900 border border-white/10 rounded-lg text-xs px-3 py-1.5 text-white focus:outline-none focus:border-violet-500"
