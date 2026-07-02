@@ -12,13 +12,14 @@ import type { Section } from '../../lib/types/project.types'
 
 interface Props {
   section: Section
+  initialTab?: 'ocr' | 'colors'
   onClose: () => void
 }
 
-export function OcrModal({ section, onClose }: Props) {
+export function OcrModal({ section, initialTab = 'ocr', onClose }: Props) {
   const updateSection = useProjectStore((state) => state.updateSection)
   
-  const [activeModalTab, setActiveModalTab] = useState<'ocr' | 'colors'>('ocr')
+  const [activeModalTab, setActiveModalTab] = useState<'ocr' | 'colors'>(initialTab)
   const [image, setImage] = useState<File | string | null>(null)
   const [loading, setLoading] = useState(false)
   const [progress, setProgress] = useState(0)

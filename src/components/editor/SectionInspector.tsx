@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useProjectStore } from '../../lib/store/projectStore'
 import { THEME_OPTIONS, themes, applyTheme } from '../../lib/themes'
-import { Info, Trash2, Plus, Eye, EyeOff, ScanText } from 'lucide-react'
+import { Info, Trash2, Plus, Eye, EyeOff, ScanText, Palette } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { ImageUploader } from '../shared/ImageUploader'
 import { OcrModal } from '../ocr/OcrModal'
@@ -22,6 +22,7 @@ export function SectionInspector() {
   } = useProjectStore()
   const [activeTab, setActiveTab] = useState<Tab>('content')
   const [ocrOpen, setOcrOpen] = useState(false)
+  const [ocrInitialTab, setOcrInitialTab] = useState<'ocr' | 'colors'>('ocr')
   const { t } = useTranslation()
 
   const section = project.sections.find((s) => s.id === activeSectionId)
@@ -1744,14 +1745,28 @@ export function SectionInspector() {
         {activeTab === 'content' && (
           <div className="space-y-4">
             {['cover', 'overview', 'problem', 'process', 'color-palette', 'results', 'ux-flow', 'mockups'].includes(section.type) && (
-              <div className="flex justify-end shrink-0 mb-2">
+              <div className="flex justify-end gap-2 shrink-0 mb-2">
                 <button
-                  onClick={() => setOcrOpen(true)}
-                  className="flex items-center gap-1.5 px-2.5 py-1 bg-violet-600/20 border border-violet-500/20 text-[10px] font-bold text-violet-400 hover:text-white hover:bg-violet-600 hover:border-violet-500 rounded-lg transition-all"
+                  onClick={() => {
+                    setOcrInitialTab('ocr')
+                    setOcrOpen(true)
+                  }}
+                  className="flex items-center gap-1.5 px-2.5 py-1 bg-violet-600/20 border border-violet-500/20 text-[10px] font-bold text-violet-400 hover:text-white hover:bg-violet-600 hover:border-violet-500 rounded-lg transition-all cursor-pointer"
                   title="Extraer texto de una captura"
                 >
                   <ScanText size={11} />
-                  <span>OCR (Extraer de Imagen)</span>
+                  <span>OCR (Texto)</span>
+                </button>
+                <button
+                  onClick={() => {
+                    setOcrInitialTab('colors')
+                    setOcrOpen(true)
+                  }}
+                  className="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-600/20 border border-emerald-500/20 text-[10px] font-bold text-emerald-400 hover:text-white hover:bg-emerald-600 hover:border-emerald-500 rounded-lg transition-all cursor-pointer"
+                  title="Analizar colores de una landing o captura"
+                >
+                  <Palette size={11} />
+                  <span>Paleta (Extractor)</span>
                 </button>
               </div>
             )}
@@ -1764,6 +1779,7 @@ export function SectionInspector() {
         {ocrOpen && (
           <OcrModal
             section={section}
+            initialTab={ocrInitialTab}
             onClose={() => setOcrOpen(false)}
           />
         )}
