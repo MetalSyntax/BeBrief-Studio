@@ -418,7 +418,9 @@ export function MockupsSection({ section, isEditing, onClick }: Props) {
               <div 
                 key={index} 
                 style={getCardRadiusStyle(style.radius)}
-                className="group relative flex flex-col items-center justify-center bg-white/[0.02] border border-white/5 overflow-hidden p-6 aspect-[4/5] hover:border-accent/20 transition-all duration-300 w-full"
+                className={`group relative flex flex-col items-center justify-center bg-white/[0.02] border border-white/5 overflow-hidden p-6 hover:border-accent/20 transition-all duration-300 w-full ${
+                  mock.deviceFrame === 'browser' ? 'aspect-[16/10]' : 'aspect-[4/5]'
+                }`}
               >
                 {mock.image ? (
                   <div className="relative w-full h-full flex flex-col items-center justify-between p-2 overflow-hidden">

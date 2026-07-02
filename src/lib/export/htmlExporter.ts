@@ -622,6 +622,10 @@ ${cssVariables}
       overflow: hidden;
     }
 
+    .mockup-item.device-browser {
+      aspect-ratio: 16 / 10;
+    }
+
     .mockup-item img {
       max-width: 100%;
       max-height: 100%;
